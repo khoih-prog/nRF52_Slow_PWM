@@ -975,7 +975,7 @@ Channel : 15	Period : 20000		OnTime : 19000	Start_Time : 2906250
 
 ### 4. ISR_Modify_PWM on NRF52840_ITSYBITSY
 
-The following is the sample terminal output when running example [ISR_Modify_PWM](examples/ISR_Modify_PWM) on **nRF52-based NRF52840_ITSYBITS** to demonstrate how to modify PWM settings on-the-fly without deleting the PWM channel
+The following is the sample terminal output when running example [ISR_Modify_PWM](examples/ISR_Modify_PWM) on **nRF52-based NRF52840_ITSYBITSY** to demonstrate how to modify PWM settings on-the-fly without deleting the PWM channel
 
 ```
 Starting ISR_Modify_PWM on NRF52840_ITSYBITSY
@@ -994,7 +994,7 @@ Channel : 0	Period : 500000		OnTime : 450000	Start_Time : 32674804
 
 ### 5. ISR_Changing_PWM on NRF52840_ITSYBITSY
 
-The following is the sample terminal output when running example [ISR_Changing_PWM](examples/ISR_Changing_PWM) on **nRF52-based NRF52840_ITSYBITS** to demonstrate how to modify PWM settings on-the-fly by deleting the PWM channel and reinit the PWM channel
+The following is the sample terminal output when running example [ISR_Changing_PWM](examples/ISR_Changing_PWM) on **nRF52-based NRF52840_ITSYBITSY** to demonstrate how to modify PWM settings on-the-fly by deleting the PWM channel and reinit the PWM channel
 
 ```
 Starting ISR_Changing_PWM on NRF52840_ITSYBITSY
