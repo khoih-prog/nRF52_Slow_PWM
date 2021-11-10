@@ -29,14 +29,18 @@
   * [1. Init Hardware Timer](#1-init-hardware-timer)
   * [2. Set PWM Frequency, dutycycle, attach irqCallbackStartFunc and irqCallbackStopFunc functions](#2-Set-PWM-Frequency-dutycycle-attach-irqCallbackStartFunc-and-irqCallbackStopFunc-functions)
 * [Examples](#examples)
-  * [  1. ISR_16_PWMs_Array](examples/ISR_16_PWMs_Array)
-  * [  2. ISR_16_PWMs_Array_Complex](examples/ISR_16_PWMs_Array_Complex)
-  * [  3. ISR_16_PWMs_Array_Simple](examples/ISR_16_PWMs_Array_Simple)
+  * [ 1. ISR_16_PWMs_Array](examples/ISR_16_PWMs_Array)
+  * [ 2. ISR_16_PWMs_Array_Complex](examples/ISR_16_PWMs_Array_Complex)
+  * [ 3. ISR_16_PWMs_Array_Simple](examples/ISR_16_PWMs_Array_Simple)
+  * [ 4. ISR_Changing_PWM](examples/ISR_Changing_PWM)
+  * [ 5. ISR_Modify_PWM](examples/ISR_Modify_PWM)
 * [Example ISR_16_PWMs_Array_Complex](#Example-ISR_16_PWMs_Array_Complex)
 * [Debug Terminal Output Samples](#debug-terminal-output-samples)
   * [1. ISR_16_PWMs_Array_Complex on NRF52840_ITSYBITSY](#1-ISR_16_PWMs_Array_Complex-on-NRF52840_ITSYBITSY)
   * [2. ISR_16_PWMs_Array on NRF52840_ITSYBITSY](#2-ISR_16_PWMs_Array-on-NRF52840_ITSYBITSY)
   * [3. ISR_16_PWMs_Array_Simple on NRF52840_ITSYBITSY](#3-ISR_16_PWMs_Array_Simple-on-NRF52840_ITSYBITSY)
+  * [4. ISR_Modify_PWM on NRF52840_ITSYBITSY](#4-ISR_Modify_PWM-on-NRF52840_ITSYBITSY)
+  * [5. ISR_Changing_PWM on NRF52840_ITSYBITSY](#5-ISR_Changing_PWM-on-NRF52840_ITSYBITSY)
 * [Debug](#debug)
 * [Troubleshooting](#troubleshooting)
 * [Issues](#issues)
@@ -54,7 +58,7 @@
 
 ### Features
 
-This library enables you to use ISR-based PWM channels on an nRF52-based board, such as `Itsy-Bitsy nRF52840`, using [`Adafruit nRF52 core`](https://github.com/adafruit/Adafruit_nRF52_Arduino) core  to create and output PWM any GPIO pin. Because this library doesn't use the powerful purely hardware-controlled PWM with many limitations, the maximum PWM frequency is currently limited at **1000Hz**, which is still suitable for many real-life applications.
+This library enables you to use ISR-based PWM channels on an nRF52-based board, such as `Itsy-Bitsy nRF52840`, using [`Adafruit nRF52 core`](https://github.com/adafruit/Adafruit_nRF52_Arduino) core  to create and output PWM any GPIO pin. Because this library doesn't use the powerful purely hardware-controlled PWM with many limitations, the maximum PWM frequency is currently limited at **1000Hz**, which is still suitable for many real-life applications. Now you can also modify PWM settings on-the-fly.
 
 ---
 
@@ -258,7 +262,9 @@ void setup()
 
  1. [ISR_16_PWMs_Array](examples/ISR_16_PWMs_Array)
  2. [ISR_16_PWMs_Array_Complex](examples/ISR_16_PWMs_Array_Complex)
- 3. [ISR_16_PWMs_Array_Simple](examples/ISR_16_PWMs_Array_Simple) 
+ 3. [ISR_16_PWMs_Array_Simple](examples/ISR_16_PWMs_Array_Simple)
+ 4. [ISR_Changing_PWM](examples/ISR_Changing_PWM)
+ 5. [ISR_Modify_PWM](examples/ISR_Modify_PWM)
 
  
 ---
@@ -403,12 +409,11 @@ uint32_t PWM_Period[NUMBER_ISR_PWMS] =
   111111L,   100000L,    66667L,    50000L,    40000L,   33333L,     25000L,    20000L
 };
 
-
 // You can assign any interval for any timer here, in Hz
-uint32_t PWM_Freq[NUMBER_ISR_PWMS] =
+double PWM_Freq[NUMBER_ISR_PWMS] =
 {
-  1,  2,  3,  4,  5,  6,  7,  8,
-  9, 10, 15, 20, 25, 30, 40, 50
+  1.0f,  2.0f,  3.0f,  4.0f,  5.0f,  6.0f,  7.0f,  8.0f,
+  9.0f, 10.0f, 15.0f, 20.0f, 25.0f, 30.0f, 40.0f, 50.0f
 };
 
 // You can assign any interval for any timer here, in milliseconds
@@ -851,7 +856,7 @@ The following is the sample terminal output when running example [ISR_16_PWMs_Ar
 
 ```
 Starting ISR_16_PWMs_Array_Complex on NRF52840_ITSYBITSY
-NRF52_Slow_PWM v1.0.0
+NRF52_Slow_PWM v1.1.0
 [PWM] NRF52TimerInterrupt: F_CPU (MHz) = 64 , Timer =  NRF_TIMER2
 [PWM] Frequency = 1000000.00 , _count = 10
 Starting ITimer OK, micros() = 2910156
@@ -914,7 +919,7 @@ The following is the sample terminal output when running example [**ISR_16_PWMs_
 
 ```
 Starting ISR_16_PWMs_Array on NRF52840_ITSYBITSY
-NRF52_Slow_PWM v1.0.0
+NRF52_Slow_PWM v1.1.0
 [PWM] NRF52TimerInterrupt: F_CPU (MHz) = 64 , Timer =  NRF_TIMER2
 [PWM] Frequency = 1000000.00 , _count = 20
 Starting ITimer OK, micros() = 3693359
@@ -944,7 +949,7 @@ The following is the sample terminal output when running example [**ISR_16_PWMs_
 
 ```
 Starting ISR_16_PWMs_Array_Simple on NRF52840_ITSYBITSY
-NRF52_Slow_PWM v1.0.0
+NRF52_Slow_PWM v1.1.0
 [PWM] NRF52TimerInterrupt: F_CPU (MHz) = 64 , Timer =  NRF_TIMER2
 [PWM] Frequency = 1000000.00 , _count = 20
 Starting ITimer OK, micros() = 2906250
@@ -966,6 +971,46 @@ Channel : 14	Period : 25000		OnTime : 22500	Start_Time : 2906250
 Channel : 15	Period : 20000		OnTime : 19000	Start_Time : 2906250
 ```
 
+---
+
+### 4. ISR_Modify_PWM on NRF52840_ITSYBITSY
+
+The following is the sample terminal output when running example [ISR_Modify_PWM](examples/ISR_Modify_PWM) on **nRF52-based NRF52840_ITSYBITS** to demonstrate how to modify PWM settings on-the-fly without deleting the PWM channel
+
+```
+Starting ISR_Modify_PWM on NRF52840_ITSYBITSY
+NRF52_Slow_PWM v1.1.0
+[PWM] NRF52TimerInterrupt: F_CPU (MHz) = 64 , Timer =  NRF_TIMER2
+[PWM] Frequency = 16000000.00 , _count = 320
+Starting ITimer OK, micros() = 2670898
+Using PWM Freq = 1.00, PWM DutyCycle = 10
+Channel : 0	Period : 1000000		OnTime : 100000	Start_Time : 2671875
+Channel : 0	Period : 500000		OnTime : 450000	Start_Time : 12672851
+Channel : 0	Period : 1000000		OnTime : 100000	Start_Time : 22673828
+Channel : 0	Period : 500000		OnTime : 450000	Start_Time : 32674804
+```
+
+---
+
+### 5. ISR_Changing_PWM on NRF52840_ITSYBITSY
+
+The following is the sample terminal output when running example [ISR_Changing_PWM](examples/ISR_Changing_PWM) on **nRF52-based NRF52840_ITSYBITS** to demonstrate how to modify PWM settings on-the-fly by deleting the PWM channel and reinit the PWM channel
+
+```
+Starting ISR_Changing_PWM on NRF52840_ITSYBITSY
+NRF52_Slow_PWM v1.1.0
+[PWM] NRF52TimerInterrupt: F_CPU (MHz) = 64 , Timer =  NRF_TIMER2
+[PWM] Frequency = 16000000.00 , _count = 320
+Starting ITimer OK, micros() = 2670898
+Using PWM Freq = 1.00, PWM DutyCycle = 50
+Channel : 0	Period : 1000000		OnTime : 500000	Start_Time : 2671875
+Using PWM Freq = 2.00, PWM DutyCycle = 90
+Channel : 0	Period : 500000		OnTime : 450000	Start_Time : 12683593
+Using PWM Freq = 1.00, PWM DutyCycle = 50
+Channel : 0	Period : 1000000		OnTime : 500000	Start_Time : 22689453
+Using PWM Freq = 2.00, PWM DutyCycle = 90
+Channel : 0	Period : 500000		OnTime : 450000	Start_Time : 32711914
+```
 
 ---
 ---
@@ -1010,6 +1055,7 @@ Submit issues to: [nRF52_Slow_PWM issues](https://github.com/khoih-prog/nRF52_Sl
 
 1. Basic hardware multi-channel PWM for **nRF52-based AdaFruit Itsy-Bitsy nRF52840, Feather nRF52840 Express, etc.** using [`Adafruit nRF52 core`](https://github.com/adafruit/Adafruit_nRF52_Arduino)
 2. Add Table of Contents
+3. Add functions to modify PWM settings on-the-fly
 
 ---
 ---

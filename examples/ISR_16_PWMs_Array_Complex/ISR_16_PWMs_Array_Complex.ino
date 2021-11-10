@@ -11,12 +11,6 @@
   The accuracy is nearly perfect compared to software timers. The most important feature is they're ISR-based timers
   Therefore, their executions are not blocked by bad-behaving functions / tasks.
   This important feature is absolutely necessary for mission-critical tasks.
-
-  Version: 1.0.0
-
-  Version Modified By   Date      Comments
-  ------- -----------  ---------- -----------
-  1.0.0   K.Hoang      25/09/2021 Initial coding for nRF52-based boards using Adafruit_nRF52_Arduino core
 *****************************************************************************************************************************/
 
 #if !(defined(NRF52840_FEATHER) || defined(NRF52832_FEATHER) || defined(NRF52_SERIES) || defined(ARDUINO_NRF52_ADAFRUIT) || \
@@ -155,12 +149,11 @@ uint32_t PWM_Period[NUMBER_ISR_PWMS] =
   111111L,   100000L,    66667L,    50000L,    40000L,   33333L,     25000L,    20000L
 };
 
-
 // You can assign any interval for any timer here, in Hz
-uint32_t PWM_Freq[NUMBER_ISR_PWMS] =
+double PWM_Freq[NUMBER_ISR_PWMS] =
 {
-  1,  2,  3,  4,  5,  6,  7,  8,
-  9, 10, 15, 20, 25, 30, 40, 50
+  1.0f,  2.0f,  3.0f,  4.0f,  5.0f,  6.0f,  7.0f,  8.0f,
+  9.0f, 10.0f, 15.0f, 20.0f, 25.0f, 30.0f, 40.0f, 50.0f
 };
 
 // You can assign any interval for any timer here, in milliseconds

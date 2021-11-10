@@ -15,7 +15,7 @@ If you don't find anything, please [open a new issue](https://github.com/khoih-p
 Please ensure to specify the following:
 
 * Arduino IDE version (e.g. 1.8.16) or Platform.io version
-* `nRF52` Core Version (e.g. Adafruit nRF52 core v1.0.0)
+* `nRF52` Core Version (e.g. Adafruit nRF52 core v1.1.0)
 * Contextual information (e.g. what you were trying to achieve)
 * Simplest possible steps to reproduce
 * Anything that might be relevant in your opinion, such as:
@@ -27,9 +27,9 @@ Please ensure to specify the following:
 
 ```
 Arduino IDE version: 1.8.16
-Arduino NRF52 Core Version 1.0.0
+Arduino NRF52 Core Version 1.1.0
 OS: Ubuntu 20.04 LTS
-Linux xy-Inspiron-3593 5.4.0-80-generic #90-Ubuntu SMP Fri Jul 9 22:49:44 UTC 2021 x86_64 x86_64 x86_64 GNU/Linux
+Linux xy-Inspiron-3593 5.4.0-90-generic #101-Ubuntu SMP Fri Oct 15 20:00:55 UTC 2021 x86_64 x86_64 x86_64 GNU/Linux
 
 Context:
 I encountered a crash while trying to use the Timer Interrupt.

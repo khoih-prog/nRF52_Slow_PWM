@@ -12,11 +12,12 @@
   Therefore, their executions are not blocked by bad-behaving functions / tasks.
   This important feature is absolutely necessary for mission-critical tasks.
 
-  Version: 1.0.0
+  Version: 1.1.0
 
   Version Modified By   Date      Comments
   ------- -----------  ---------- -----------
   1.0.0   K.Hoang      25/09/2021 Initial coding for nRF52-based boards using Adafruit_nRF52_Arduino core
+  1.1.0   K Hoang      10/11/2021 Add functions to modify PWM settings on-the-fly
 *****************************************************************************************************************************/
 
 /*
@@ -71,7 +72,7 @@
 #endif
 
 #ifndef NRF52_SLOW_PWM_VERSION
-  #define NRF52_SLOW_PWM_VERSION       "NRF52_Slow_PWM v1.0.0"
+  #define NRF52_SLOW_PWM_VERSION       "NRF52_Slow_PWM v1.1.0"
 #endif
 
 #ifndef _PWM_LOGLEVEL_
