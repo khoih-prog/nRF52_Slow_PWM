@@ -17,7 +17,7 @@
       defined(NRF52840_FEATHER_SENSE) || defined(NRF52840_ITSYBITSY) || defined(NRF52840_CIRCUITPLAY) || \
       defined(NRF52840_CLUE) || defined(NRF52840_METRO) || defined(NRF52840_PCA10056) || defined(PARTICLE_XENON) || \
       defined(MDBT50Q_RX) || defined(NINA_B302_ublox) || defined(NINA_B112_ublox) )
-#error This code is designed to run on nRF52 platform! Please check your Tools->Board setting.
+  #error This code is designed to run on nRF52 platform! Please check your Tools->Board setting.
 #endif
 
 // These define's must be placed at the beginning before #include "ESP32_PWM.h"
@@ -27,6 +27,7 @@
 
 #define USING_MICROS_RESOLUTION       true    //false 
 
+// To be included only in main(), .ino with setup() to avoid `Multiple Definitions` Linker Error
 #include "nRF52_Slow_PWM.h"
 
 #include <SimpleTimer.h>              // https://github.com/jfturcot/SimpleTimer
@@ -104,12 +105,12 @@ typedef struct
   irqCallback   irqCallbackStopFunc;
 
 #if USING_PWM_FREQUENCY
-  uint32_t      PWM_Freq;
+  float         PWM_Freq;
 #else
   uint32_t      PWM_Period;
 #endif
 
-  uint32_t      PWM_DutyCycle;
+  float         PWM_DutyCycle;
 
   uint64_t      deltaMicrosStart;
   uint64_t      previousMicrosStart;
@@ -129,43 +130,43 @@ void doingSomethingStop(int index);
 
 #else   // #if USE_COMPLEX_STRUCT
 
-volatile unsigned long deltaMicrosStart    [NUMBER_ISR_PWMS] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-volatile unsigned long previousMicrosStart [NUMBER_ISR_PWMS] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+volatile uint64_t deltaMicrosStart    [] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+volatile uint64_t previousMicrosStart [] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
-volatile unsigned long deltaMicrosStop     [NUMBER_ISR_PWMS] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-volatile unsigned long previousMicrosStop  [NUMBER_ISR_PWMS] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+volatile uint64_t deltaMicrosStop     [] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+volatile uint64_t previousMicrosStop  [] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
 // You can assign pins here. Be carefull to select good pin to use or crash, e.g pin 6-11
-uint32_t PWM_Pin[NUMBER_ISR_PWMS] =
+uint32_t PWM_Pin[] =
 {
   LED_BUILTIN, LED_BLUE, LED_RED, PIN_D0, PIN_D1,  PIN_D2,  PIN_D3,  PIN_D4,
   PIN_D5,   PIN_D6,  PIN_D7, PIN_D8, PIN_D9, PIN_D10, PIN_D11, PIN_D12
 };
 
 // You can assign any interval for any timer here, in microseconds
-uint32_t PWM_Period[NUMBER_ISR_PWMS] =
+uint32_t PWM_Period[] =
 {
   1000000L,   500000L,   333333L,   250000L,   200000L,   166667L,   142857L,   125000L,
   111111L,   100000L,    66667L,    50000L,    40000L,   33333L,     25000L,    20000L
 };
 
 // You can assign any interval for any timer here, in Hz
-double PWM_Freq[NUMBER_ISR_PWMS] =
+float PWM_Freq[] =
 {
   1.0f,  2.0f,  3.0f,  4.0f,  5.0f,  6.0f,  7.0f,  8.0f,
   9.0f, 10.0f, 15.0f, 20.0f, 25.0f, 30.0f, 40.0f, 50.0f
 };
 
 // You can assign any interval for any timer here, in milliseconds
-uint32_t PWM_DutyCycle[NUMBER_ISR_PWMS] =
+float PWM_DutyCycle[] =
 {
-  5, 10, 20, 25, 30, 35, 40, 45,
-  50, 45, 40, 35, 30, 25, 20, 15
+   5.0, 10.0, 20.0, 30.0, 40.0, 45.0, 50.0, 55.0,
+  60.0, 65.0, 70.0, 75.0, 80.0, 85.0, 90.0, 95.0
 };
 
 void doingSomethingStart(int index)
 {
-  unsigned long currentMicros  = micros();
+  uint64_t currentMicros  = micros();
 
   deltaMicrosStart[index]    = currentMicros - previousMicrosStart[index];
   previousMicrosStart[index] = currentMicros;
@@ -173,7 +174,7 @@ void doingSomethingStart(int index)
 
 void doingSomethingStop(int index)
 {
-  unsigned long currentMicros  = micros();
+  uint64_t currentMicros  = micros();
 
   // Count from start to stop PWM pulse
   deltaMicrosStop[index]    = currentMicros - previousMicrosStart[index];
@@ -352,57 +353,57 @@ void doingSomethingStop15()
 
 #if USE_COMPLEX_STRUCT
 
-#if USING_PWM_FREQUENCY
-
-ISR_PWM_Data curISR_PWM_Data[NUMBER_ISR_PWMS] =
-{
-  // pin, irqCallbackStartFunc, irqCallbackStopFunc, PWM_Freq, PWM_DutyCycle, deltaMicrosStart, previousMicrosStart, deltaMicrosStop, previousMicrosStop
-  { LED_BUILTIN,  doingSomethingStart0,    doingSomethingStop0,    1,   5, 0, 0, 0, 0 },
-  { LED_BLUE,     doingSomethingStart1,    doingSomethingStop1,    2,  10, 0, 0, 0, 0 },
-  { LED_RED,      doingSomethingStart2,    doingSomethingStop2,    3,  20, 0, 0, 0, 0 },
-  { PIN_D0,       doingSomethingStart3,    doingSomethingStop3,    4,  25, 0, 0, 0, 0 },
-  { PIN_D1,       doingSomethingStart4,    doingSomethingStop4,    5,  30, 0, 0, 0, 0 },
-  { PIN_D2,       doingSomethingStart5,    doingSomethingStop5,    6,  35, 0, 0, 0, 0 },
-  { PIN_D3,       doingSomethingStart6,    doingSomethingStop6,    7,  40, 0, 0, 0, 0 },
-  { PIN_D4,       doingSomethingStart7,    doingSomethingStop7,    8,  45, 0, 0, 0, 0 },
-  { PIN_D5,       doingSomethingStart8,    doingSomethingStop8,    9,  50, 0, 0, 0, 0 },
-  { PIN_D6,       doingSomethingStart9,    doingSomethingStop9,   10,  45, 0, 0, 0, 0 },
-  { PIN_D7,       doingSomethingStart10,   doingSomethingStop10,  15,  40, 0, 0, 0, 0 },
-  { PIN_D8,       doingSomethingStart11,   doingSomethingStop11,  20,  35, 0, 0, 0, 0 },
-  { PIN_D9,       doingSomethingStart12,   doingSomethingStop12,  25,  30, 0, 0, 0, 0 },
-  { PIN_D10,      doingSomethingStart13,   doingSomethingStop13,  30,  25, 0, 0, 0, 0 },
-  { PIN_D11,      doingSomethingStart14,   doingSomethingStop14,  40,  20, 0, 0, 0, 0 },
-  { PIN_D12,      doingSomethingStart15,   doingSomethingStop15,  50,  15, 0, 0, 0, 0 }
-};
-
-#else   // #if USING_PWM_FREQUENCY
-
-ISR_PWM_Data curISR_PWM_Data[NUMBER_ISR_PWMS] =
-{
-  // pin, irqCallbackStartFunc, irqCallbackStopFunc, PWM_Period, PWM_DutyCycle, deltaMicrosStart, previousMicrosStart, deltaMicrosStop, previousMicrosStop
-  { LED_BUILTIN,  doingSomethingStart0,     doingSomethingStop0,   1000000L,  5, 0, 0, 0, 0 },
-  { LED_BLUE,     doingSomethingStart1,     doingSomethingStop1,    500000L, 10, 0, 0, 0, 0 },
-  { LED_RED,      doingSomethingStart2,     doingSomethingStop2,    333333L, 20, 0, 0, 0, 0 },
-  { PIN_D0,       doingSomethingStart3,     doingSomethingStop3,    250000L, 25, 0, 0, 0, 0 },
-  { PIN_D1,       doingSomethingStart4,     doingSomethingStop4,    200000L, 30, 0, 0, 0, 0 },
-  { PIN_D2,       doingSomethingStart5,     doingSomethingStop5,    166667L, 35, 0, 0, 0, 0 },
-  { PIN_D3,       doingSomethingStart6,     doingSomethingStop6,    142857L, 40, 0, 0, 0, 0 },
-  { PIN_D4,       doingSomethingStart7,     doingSomethingStop7,    125000L, 45, 0, 0, 0, 0 },
-  { PIN_D5,       doingSomethingStart8,     doingSomethingStop8,    111111L, 50, 0, 0, 0, 0 },
-  { PIN_D6,       doingSomethingStart9,     doingSomethingStop9,    100000L, 45, 0, 0, 0, 0 },
-  { PIN_D7,       doingSomethingStart10,    doingSomethingStop10,    66667L, 40, 0, 0, 0, 0 },
-  { PIN_D8,       doingSomethingStart11,    doingSomethingStop11,    50000L, 35, 0, 0, 0, 0 },
-  { PIN_D9,       doingSomethingStart12,    doingSomethingStop12,    40000L, 30, 0, 0, 0, 0 },
-  { PIN_D10,      doingSomethingStart13,    doingSomethingStop13,    33333L, 25, 0, 0, 0, 0 },
-  { PIN_D11,      doingSomethingStart14,    doingSomethingStop14,    25000L, 20, 0, 0, 0, 0 },
-  { PIN_D12,      doingSomethingStart15,    doingSomethingStop15,    20000L, 15, 0, 0, 0, 0 }
-};
-
-#endif  // #if USING_PWM_FREQUENCY
+  #if USING_PWM_FREQUENCY
+  
+  ISR_PWM_Data curISR_PWM_Data[] =
+  {
+    // pin, irqCallbackStartFunc, irqCallbackStopFunc, PWM_Freq, PWM_DutyCycle, deltaMicrosStart, previousMicrosStart, deltaMicrosStop, previousMicrosStop
+    { LED_BUILTIN,  doingSomethingStart0,    doingSomethingStop0,    1,   5, 0, 0, 0, 0 },
+    { LED_BLUE,     doingSomethingStart1,    doingSomethingStop1,    2,  10, 0, 0, 0, 0 },
+    { LED_RED,      doingSomethingStart2,    doingSomethingStop2,    3,  20, 0, 0, 0, 0 },
+    { PIN_D0,       doingSomethingStart3,    doingSomethingStop3,    4,  30, 0, 0, 0, 0 },
+    { PIN_D1,       doingSomethingStart4,    doingSomethingStop4,    5,  40, 0, 0, 0, 0 },
+    { PIN_D2,       doingSomethingStart5,    doingSomethingStop5,    6,  45, 0, 0, 0, 0 },
+    { PIN_D3,       doingSomethingStart6,    doingSomethingStop6,    7,  50, 0, 0, 0, 0 },
+    { PIN_D4,       doingSomethingStart7,    doingSomethingStop7,    8,  55, 0, 0, 0, 0 },
+    { PIN_D5,       doingSomethingStart8,    doingSomethingStop8,    9,  60, 0, 0, 0, 0 },
+    { PIN_D6,       doingSomethingStart9,    doingSomethingStop9,   10,  65, 0, 0, 0, 0 },
+    { PIN_D7,       doingSomethingStart10,   doingSomethingStop10,  15,  70, 0, 0, 0, 0 },
+    { PIN_D8,       doingSomethingStart11,   doingSomethingStop11,  20,  75, 0, 0, 0, 0 },
+    { PIN_D9,       doingSomethingStart12,   doingSomethingStop12,  25,  80, 0, 0, 0, 0 },
+    { PIN_D10,      doingSomethingStart13,   doingSomethingStop13,  30,  85, 0, 0, 0, 0 },
+    { PIN_D11,      doingSomethingStart14,   doingSomethingStop14,  40,  90, 0, 0, 0, 0 },
+    { PIN_D12,      doingSomethingStart15,   doingSomethingStop15,  50,  95, 0, 0, 0, 0 }
+  };
+  
+  #else   // #if USING_PWM_FREQUENCY
+  
+  ISR_PWM_Data curISR_PWM_Data[] =
+  {
+    // pin, irqCallbackStartFunc, irqCallbackStopFunc, PWM_Period, PWM_DutyCycle, deltaMicrosStart, previousMicrosStart, deltaMicrosStop, previousMicrosStop
+    { LED_BUILTIN,  doingSomethingStart0,     doingSomethingStop0,   1000000L,  5, 0, 0, 0, 0 },
+    { LED_BLUE,     doingSomethingStart1,     doingSomethingStop1,    500000L, 10, 0, 0, 0, 0 },
+    { LED_RED,      doingSomethingStart2,     doingSomethingStop2,    333333L, 20, 0, 0, 0, 0 },
+    { PIN_D0,       doingSomethingStart3,     doingSomethingStop3,    250000L, 30, 0, 0, 0, 0 },
+    { PIN_D1,       doingSomethingStart4,     doingSomethingStop4,    200000L, 40, 0, 0, 0, 0 },
+    { PIN_D2,       doingSomethingStart5,     doingSomethingStop5,    166667L, 45, 0, 0, 0, 0 },
+    { PIN_D3,       doingSomethingStart6,     doingSomethingStop6,    142857L, 50, 0, 0, 0, 0 },
+    { PIN_D4,       doingSomethingStart7,     doingSomethingStop7,    125000L, 55, 0, 0, 0, 0 },
+    { PIN_D5,       doingSomethingStart8,     doingSomethingStop8,    111111L, 60, 0, 0, 0, 0 },
+    { PIN_D6,       doingSomethingStart9,     doingSomethingStop9,    100000L, 65, 0, 0, 0, 0 },
+    { PIN_D7,       doingSomethingStart10,    doingSomethingStop10,    66667L, 70, 0, 0, 0, 0 },
+    { PIN_D8,       doingSomethingStart11,    doingSomethingStop11,    50000L, 75, 0, 0, 0, 0 },
+    { PIN_D9,       doingSomethingStart12,    doingSomethingStop12,    40000L, 80, 0, 0, 0, 0 },
+    { PIN_D10,      doingSomethingStart13,    doingSomethingStop13,    33333L, 85, 0, 0, 0, 0 },
+    { PIN_D11,      doingSomethingStart14,    doingSomethingStop14,    25000L, 90, 0, 0, 0, 0 },
+    { PIN_D12,      doingSomethingStart15,    doingSomethingStop15,    20000L, 95, 0, 0, 0, 0 }
+  };
+  
+  #endif  // #if USING_PWM_FREQUENCY
 
 void doingSomethingStart(int index)
 {
-  unsigned long currentMicros  = micros();
+  uint64_t currentMicros  = micros();
 
   curISR_PWM_Data[index].deltaMicrosStart    = currentMicros - curISR_PWM_Data[index].previousMicrosStart;
   curISR_PWM_Data[index].previousMicrosStart = currentMicros;
@@ -410,7 +411,7 @@ void doingSomethingStart(int index)
 
 void doingSomethingStop(int index)
 {
-  unsigned long currentMicros  = micros();
+  uint64_t currentMicros  = micros();
 
   //curISR_PWM_Data[index].deltaMicrosStop     = currentMicros - curISR_PWM_Data[index].previousMicrosStop;
   // Count from start to stop PWM pulse
@@ -420,7 +421,7 @@ void doingSomethingStop(int index)
 
 #else   // #if USE_COMPLEX_STRUCT
 
-irqCallback irqCallbackStartFunc[NUMBER_ISR_PWMS] =
+irqCallback irqCallbackStartFunc[] =
 {
   doingSomethingStart0,  doingSomethingStart1,  doingSomethingStart2,  doingSomethingStart3,
   doingSomethingStart4,  doingSomethingStart5,  doingSomethingStart6,  doingSomethingStart7,
@@ -428,7 +429,7 @@ irqCallback irqCallbackStartFunc[NUMBER_ISR_PWMS] =
   doingSomethingStart12, doingSomethingStart13, doingSomethingStart14, doingSomethingStart15
 };
 
-irqCallback irqCallbackStopFunc[NUMBER_ISR_PWMS] =
+irqCallback irqCallbackStopFunc[] =
 {
   doingSomethingStop0,  doingSomethingStop1,  doingSomethingStop2,  doingSomethingStop3,
   doingSomethingStop4,  doingSomethingStop5,  doingSomethingStop6,  doingSomethingStop7,
@@ -451,9 +452,9 @@ SimpleTimer simpleTimer;
 // 2. Very long "do", "while", "for" loops without predetermined exit time.
 void simpleTimerDoingSomething2s()
 {
-  static unsigned long previousMicrosStart = startMicros;
+  static uint64_t previousMicrosStart = startMicros;
 
-  unsigned long currMicros = micros();
+  uint64_t currMicros = micros();
 
   Serial.print(F("SimpleTimer (ms): ")); Serial.print(SIMPLE_TIMER_MS);
   Serial.print(F(", us : ")); Serial.print(currMicros);
@@ -478,8 +479,6 @@ void simpleTimerDoingSomething2s()
     Serial.print(curISR_PWM_Data[i].PWM_DutyCycle);
 
     Serial.print(F(", actual : ")); Serial.println((float) curISR_PWM_Data[i].deltaMicrosStop * 100.0f / curISR_PWM_Data[i].deltaMicrosStart);
-    //Serial.print(F(", actual deltaMicrosStop : ")); Serial.println(curISR_PWM_Data[i].deltaMicrosStop);
-    //Serial.print(F(", actual deltaMicrosStart : ")); Serial.println(curISR_PWM_Data[i].deltaMicrosStart);
 
 #else
 
@@ -499,8 +498,7 @@ void simpleTimerDoingSomething2s()
     Serial.print(PWM_DutyCycle[i]);
 
     Serial.print(F(", actual : ")); Serial.println( (float) deltaMicrosStop[i] * 100.0f / deltaMicrosStart[i]);
-    //Serial.print(F(", actual deltaMicrosStop : ")); Serial.println(deltaMicrosStop[i]);
-    //Serial.print(F(", actual deltaMicrosStart : ")); Serial.println(deltaMicrosStart[i]);
+
 #endif
   }
 
@@ -520,7 +518,6 @@ void setup()
   // Interval in microsecs
   if (ITimer.attachInterruptInterval(HW_TIMER_INTERVAL_US, TimerHandler))
   {
-    startMicros = micros();
     Serial.print(F("Starting ITimer OK, micros() = ")); Serial.println(startMicros);
   }
   else
@@ -531,14 +528,13 @@ void setup()
   // Just to demonstrate, don't use too many ISR Timers if not absolutely necessary
   // You can use up to 16 timer for each ISR_PWM
 
-  //for (uint16_t i = 0; i < NUMBER_ISR_PWMS; i++)
-  for (uint16_t i = 0; i < 8; i++)
+  for (uint16_t i = 0; i < NUMBER_ISR_PWMS; i++)
   {
 #if USE_COMPLEX_STRUCT
     curISR_PWM_Data[i].previousMicrosStart = startMicros;
     //ISR_PWM.setInterval(curISR_PWM_Data[i].PWM_Period, curISR_PWM_Data[i].irqCallbackStartFunc);
 
-    //void setPWM(uint32_t pin, uint32_t frequency, uint32_t dutycycle
+    //void setPWM(uint32_t pin, float frequency, float dutycycle
     // , timer_callback_p StartCallback = nullptr, timer_callback_p StopCallback = nullptr)
 
 #if USING_PWM_FREQUENCY
