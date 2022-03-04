@@ -17,8 +17,8 @@
   #error This code is designed to run on nRF52 platform! Please check your Tools->Board setting.
 #endif
 
-#define NRF52_SLOW_PWM_VERSION_MIN_TARGET      "NRF52_Slow_PWM v1.2.0"
-#define NRF52_SLOW_PWM_VERSION_MIN             1002000
+#define NRF52_SLOW_PWM_VERSION_MIN_TARGET      "NRF52_Slow_PWM v1.2.1"
+#define NRF52_SLOW_PWM_VERSION_MIN             1002001
 
 #include "multiFileProject.h"
 
