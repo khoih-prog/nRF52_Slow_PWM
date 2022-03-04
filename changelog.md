@@ -12,6 +12,7 @@
 ## Table of Contents
 
 * [Changelog](#changelog)
+  * [Releases v1.2.1](#releases-v121)
   * [Releases v1.2.0](#releases-v120)
   * [Releases v1.1.0](#releases-v110)
   * [Initial Releases v1.0.0](#Initial-Releases-v100)
@@ -20,6 +21,15 @@
 ---
 
 ## Changelog
+
+### Releases v1.2.1
+
+1. Fix `DutyCycle` bug. Check [float precisison of DutyCycle only sometimes working #3](https://github.com/khoih-prog/SAMD_Slow_PWM/issues/3)
+2. Fix `New Period` display bug. Check [random dropouts #4](https://github.com/khoih-prog/SAMD_Slow_PWM/issues/4)
+3. Display informational warning only when `_PWM_LOGLEVEL_` > 3
+4. Add support to `Sparkfun Pro nRF52840 Mini`
+5. Update examples
+6. Update `Packages' Patches`
 
 ### Releases v1.2.0
 

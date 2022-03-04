@@ -6,7 +6,8 @@
 [![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](#Contributing)
 [![GitHub issues](https://img.shields.io/github/issues/khoih-prog/nRF52_Slow_PWM.svg)](http://github.com/khoih-prog/nRF52_Slow_PWM/issues)
 
-<a href="https://www.buymeacoffee.com/khoihprog6" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 50px !important;width: 181px !important;" ></a>
+<a href="https://www.buymeacoffee.com/khoihprog6" title="Donate to my libraries using BuyMeACoffee"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Donate to my libraries using BuyMeACoffee" style="height: 50px !important;width: 181px !important;" ></a>
+<a href="https://www.buymeacoffee.com/khoihprog6" title="Donate to my libraries using BuyMeACoffee"><img src="https://img.shields.io/badge/buy%20me%20a%20coffee-donate-orange.svg?logo=buy-me-a-coffee&logoColor=FFDD00" style="height: 20px !important;width: 200px !important;" ></a>
 
 
 ---
@@ -126,6 +127,7 @@ The catch is **your function is now part of an ISR (Interrupt Service Routine), 
 ### Currently supported Boards
 
 1. **nRF52-based boards** such as **AdaFruit Itsy-Bitsy nRF52840, Feather nRF52840 Express**, etc., using [`Adafruit nRF52 core`](https://github.com/adafruit/Adafruit_nRF52_Arduino)
+2. **Sparkfun Pro nRF52840 Mini**
 
 ---
 
@@ -170,7 +172,7 @@ Another way to install is to:
 
 1. Install [VS Code](https://code.visualstudio.com/)
 2. Install [PlatformIO](https://platformio.org/platformio-ide)
-3. Install [**nRF52_Slow_PWM** library](https://platformio.org/lib/show/12879/nRF52_Slow_PWM) by using [Library Manager](https://platformio.org/lib/show/12879/nRF52_Slow_PWM/installation). Search for **nRF52_Slow_PWM** in [Platform.io Author's Libraries](https://platformio.org/lib/search?query=author:%22Khoi%20Hoang%22)
+3. Install [**nRF52_Slow_PWM** library](https://registry.platformio.org/libraries/khoih-prog/nRF52_Slow_PWM) by using [Library Manager](https://registry.platformio.org/libraries/khoih-prog/nRF52_Slow_PWM/installation). Search for **nRF52_Slow_PWM** in [Platform.io Author's Libraries](https://platformio.org/lib/search?query=author:%22Khoi%20Hoang%22)
 4. Use included [platformio.ini](platformio/platformio.ini) file from examples to ensure that all dependent libraries will installed automatically. Please visit documentation for the other options and examples at [Project Configuration File](https://docs.platformio.org/page/projectconf.html)
 
 
@@ -191,8 +193,6 @@ Supposing the Adafruit nRF52 version is 1.3.0. These files must be copied into t
 - `~/.arduino15/packages/adafruit/hardware/nrf52/1.3.0/variants/NINA_B112_ublox/variant.h`
 - `~/.arduino15/packages/adafruit/hardware/nrf52/1.3.0/variants/NINA_B112_ublox/variant.cpp`
 - **`~/.arduino15/packages/adafruit/hardware/nrf52/1.3.0/cores/nRF5/Udp.h`**
-- **`~/.arduino15/packages/adafruit/hardware/nrf52/1.3.0/cores/nRF5/Print.h`**      <===== To be able to print `uint64_t`
-- **`~/.arduino15/packages/adafruit/hardware/nrf52/1.3.0/cores/nRF5/Print.cpp`**    <===== To be able to print `uint64_t`
 
 Whenever a new version is installed, remember to copy these files into the new version directory. For example, new version is x.yy.z
 These files must be copied into the directory:
@@ -204,9 +204,10 @@ These files must be copied into the directory:
 - `~/.arduino15/packages/adafruit/hardware/nrf52/x.yy.z/variants/NINA_B112_ublox/variant.h`
 - `~/.arduino15/packages/adafruit/hardware/nrf52/x.yy.z/variants/NINA_B112_ublox/variant.cpp`
 - **`~/.arduino15/packages/adafruit/hardware/nrf52/x.yy.z/cores/nRF5/Udp.h`**
-- **`~/.arduino15/packages/adafruit/hardware/nrf52/x.yy.z/cores/nRF5/Print.h`**       <===== To be able to print `uint64_t`
-- **`~/.arduino15/packages/adafruit/hardware/nrf52/x.yy.z/cores/nRF5/Print.cpp`**     <===== To be able to print `uint64_t`
 
+---
+
+To use `Sparkfun Pro nRF52840 Mini`, you must install `Packages_Patches` and use Adafruit nrf52 core v1.0.0+
 
 ---
 ---
@@ -298,574 +299,9 @@ void setup()
 
 ### Example [ISR_16_PWMs_Array_Complex](examples/ISR_16_PWMs_Array_Complex)
 
-```
-#if !(defined(NRF52840_FEATHER) || defined(NRF52832_FEATHER) || defined(NRF52_SERIES) || defined(ARDUINO_NRF52_ADAFRUIT) || \
-      defined(NRF52840_FEATHER_SENSE) || defined(NRF52840_ITSYBITSY) || defined(NRF52840_CIRCUITPLAY) || \
-      defined(NRF52840_CLUE) || defined(NRF52840_METRO) || defined(NRF52840_PCA10056) || defined(PARTICLE_XENON) || \
-      defined(MDBT50Q_RX) || defined(NINA_B302_ublox) || defined(NINA_B112_ublox) )
-  #error This code is designed to run on nRF52 platform! Please check your Tools->Board setting.
-#endif
+https://github.com/khoih-prog/nRF52_Slow_PWM/blob/7b69f80edd248eb72236a2e74e8053cf43236286/examples/ISR_16_PWMs_Array_Complex/ISR_16_PWMs_Array_Complex.ino#L16-L581
 
-// These define's must be placed at the beginning before #include "ESP32_PWM.h"
-// _PWM_LOGLEVEL_ from 0 to 4
-// Don't define _PWM_LOGLEVEL_ > 0. Only for special ISR debugging only. Can hang the system.
-#define _PWM_LOGLEVEL_      4
 
-#define USING_MICROS_RESOLUTION       true    //false 
-
-// To be included only in main(), .ino with setup() to avoid `Multiple Definitions` Linker Error
-#include "nRF52_Slow_PWM.h"
-
-#include <SimpleTimer.h>              // https://github.com/jfturcot/SimpleTimer
-
-#define LED_OFF             HIGH
-#define LED_ON              LOW
-
-#ifndef LED_BUILTIN
-  #define LED_BUILTIN       25
-#endif
-
-#ifndef LED_BLUE
-  #define LED_BLUE          10
-#endif
-
-#ifndef LED_RED
-  #define LED_RED           11
-#endif
-
-
-#define HW_TIMER_INTERVAL_US      5L
-
-volatile uint64_t startMicros = 0;
-
-// Depending on the board, you can select NRF52 Hardware Timer from NRF_TIMER_1-NRF_TIMER_4 (1 to 4)
-// If you select the already-used NRF_TIMER_0, it'll be auto modified to use NRF_TIMER_1
-
-// Init NRF52 timer NRF_TIMER3
-NRF52Timer ITimer(NRF_TIMER_3);
-
-// Init nRF52_Slow_PWM, each can service 16 different ISR-based PWM channels
-NRF52_Slow_PWM ISR_PWM;
-
-//////////////////////////////////////////////////////
-
-void TimerHandler()
-{
-  ISR_PWM.run();
-}
-
-/////////////////////////////////////////////////
-
-#define NUMBER_ISR_PWMS         16
-
-#define PIN_D0      0
-#define PIN_D1      1
-#define PIN_D2      2
-#define PIN_D3      3
-#define PIN_D4      4
-#define PIN_D5      5
-#define PIN_D6      6
-#define PIN_D7      7
-#define PIN_D8      8
-#define PIN_D9      9
-#define PIN_D10     10
-#define PIN_D11     11
-#define PIN_D12     12
-
-typedef void (*irqCallback)  ();
-
-//////////////////////////////////////////////////////
-
-#define USE_COMPLEX_STRUCT      true
-
-#define USING_PWM_FREQUENCY     true
-
-//////////////////////////////////////////////////////
-
-#if USE_COMPLEX_STRUCT
-
-typedef struct
-{
-  uint32_t      PWM_Pin;
-  irqCallback   irqCallbackStartFunc;
-  irqCallback   irqCallbackStopFunc;
-
-#if USING_PWM_FREQUENCY
-  float         PWM_Freq;
-#else
-  uint32_t      PWM_Period;
-#endif
-
-  float         PWM_DutyCycle;
-
-  uint64_t      deltaMicrosStart;
-  uint64_t      previousMicrosStart;
-
-  uint64_t      deltaMicrosStop;
-  uint64_t      previousMicrosStop;
-
-} ISR_PWM_Data;
-
-// In nRF52, avoid doing something fancy in ISR, for example Serial.print()
-// The pure simple Serial.prints here are just for demonstration and testing. Must be eliminate in working environment
-// Or you can get this run-time error / crash
-
-void doingSomethingStart(int index);
-
-void doingSomethingStop(int index);
-
-#else   // #if USE_COMPLEX_STRUCT
-
-volatile uint64_t deltaMicrosStart    [] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-volatile uint64_t previousMicrosStart [] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-
-volatile uint64_t deltaMicrosStop     [] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-volatile uint64_t previousMicrosStop  [] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-
-// You can assign pins here. Be carefull to select good pin to use or crash, e.g pin 6-11
-uint32_t PWM_Pin[] =
-{
-  LED_BUILTIN, LED_BLUE, LED_RED, PIN_D0, PIN_D1,  PIN_D2,  PIN_D3,  PIN_D4,
-  PIN_D5,   PIN_D6,  PIN_D7, PIN_D8, PIN_D9, PIN_D10, PIN_D11, PIN_D12
-};
-
-// You can assign any interval for any timer here, in microseconds
-uint32_t PWM_Period[] =
-{
-  1000000L,   500000L,   333333L,   250000L,   200000L,   166667L,   142857L,   125000L,
-  111111L,   100000L,    66667L,    50000L,    40000L,   33333L,     25000L,    20000L
-};
-
-// You can assign any interval for any timer here, in Hz
-float PWM_Freq[] =
-{
-  1.0f,  2.0f,  3.0f,  4.0f,  5.0f,  6.0f,  7.0f,  8.0f,
-  9.0f, 10.0f, 15.0f, 20.0f, 25.0f, 30.0f, 40.0f, 50.0f
-};
-
-// You can assign any interval for any timer here, in milliseconds
-float PWM_DutyCycle[] =
-{
-   5.0, 10.0, 20.0, 30.0, 40.0, 45.0, 50.0, 55.0,
-  60.0, 65.0, 70.0, 75.0, 80.0, 85.0, 90.0, 95.0
-};
-
-void doingSomethingStart(int index)
-{
-  uint64_t currentMicros  = micros();
-
-  deltaMicrosStart[index]    = currentMicros - previousMicrosStart[index];
-  previousMicrosStart[index] = currentMicros;
-}
-
-void doingSomethingStop(int index)
-{
-  uint64_t currentMicros  = micros();
-
-  // Count from start to stop PWM pulse
-  deltaMicrosStop[index]    = currentMicros - previousMicrosStart[index];
-  previousMicrosStop[index] = currentMicros;
-}
-
-#endif    // #if USE_COMPLEX_STRUCT
-
-////////////////////////////////////
-// Shared
-////////////////////////////////////
-
-void doingSomethingStart0()
-{
-  doingSomethingStart(0);
-}
-
-void doingSomethingStart1()
-{
-  doingSomethingStart(1);
-}
-
-void doingSomethingStart2()
-{
-  doingSomethingStart(2);
-}
-
-void doingSomethingStart3()
-{
-  doingSomethingStart(3);
-}
-
-void doingSomethingStart4()
-{
-  doingSomethingStart(4);
-}
-
-void doingSomethingStart5()
-{
-  doingSomethingStart(5);
-}
-
-void doingSomethingStart6()
-{
-  doingSomethingStart(6);
-}
-
-void doingSomethingStart7()
-{
-  doingSomethingStart(7);
-}
-
-void doingSomethingStart8()
-{
-  doingSomethingStart(8);
-}
-
-void doingSomethingStart9()
-{
-  doingSomethingStart(9);
-}
-
-void doingSomethingStart10()
-{
-  doingSomethingStart(10);
-}
-
-void doingSomethingStart11()
-{
-  doingSomethingStart(11);
-}
-
-void doingSomethingStart12()
-{
-  doingSomethingStart(12);
-}
-
-void doingSomethingStart13()
-{
-  doingSomethingStart(13);
-}
-
-void doingSomethingStart14()
-{
-  doingSomethingStart(14);
-}
-
-void doingSomethingStart15()
-{
-  doingSomethingStart(15);
-}
-
-//////////////////////////////////////////////////////
-
-void doingSomethingStop0()
-{
-  doingSomethingStop(0);
-}
-
-void doingSomethingStop1()
-{
-  doingSomethingStop(1);
-}
-
-void doingSomethingStop2()
-{
-  doingSomethingStop(2);
-}
-
-void doingSomethingStop3()
-{
-  doingSomethingStop(3);
-}
-
-void doingSomethingStop4()
-{
-  doingSomethingStop(4);
-}
-
-void doingSomethingStop5()
-{
-  doingSomethingStop(5);
-}
-
-void doingSomethingStop6()
-{
-  doingSomethingStop(6);
-}
-
-void doingSomethingStop7()
-{
-  doingSomethingStop(7);
-}
-
-void doingSomethingStop8()
-{
-  doingSomethingStop(8);
-}
-
-void doingSomethingStop9()
-{
-  doingSomethingStop(9);
-}
-
-void doingSomethingStop10()
-{
-  doingSomethingStop(10);
-}
-
-void doingSomethingStop11()
-{
-  doingSomethingStop(11);
-}
-
-void doingSomethingStop12()
-{
-  doingSomethingStop(12);
-}
-
-void doingSomethingStop13()
-{
-  doingSomethingStop(13);
-}
-
-void doingSomethingStop14()
-{
-  doingSomethingStop(14);
-}
-
-void doingSomethingStop15()
-{
-  doingSomethingStop(15);
-}
-
-//////////////////////////////////////////////////////
-
-#if USE_COMPLEX_STRUCT
-
-  #if USING_PWM_FREQUENCY
-  
-  ISR_PWM_Data curISR_PWM_Data[] =
-  {
-    // pin, irqCallbackStartFunc, irqCallbackStopFunc, PWM_Freq, PWM_DutyCycle, deltaMicrosStart, previousMicrosStart, deltaMicrosStop, previousMicrosStop
-    { LED_BUILTIN,  doingSomethingStart0,    doingSomethingStop0,    1,   5, 0, 0, 0, 0 },
-    { LED_BLUE,     doingSomethingStart1,    doingSomethingStop1,    2,  10, 0, 0, 0, 0 },
-    { LED_RED,      doingSomethingStart2,    doingSomethingStop2,    3,  20, 0, 0, 0, 0 },
-    { PIN_D0,       doingSomethingStart3,    doingSomethingStop3,    4,  30, 0, 0, 0, 0 },
-    { PIN_D1,       doingSomethingStart4,    doingSomethingStop4,    5,  40, 0, 0, 0, 0 },
-    { PIN_D2,       doingSomethingStart5,    doingSomethingStop5,    6,  45, 0, 0, 0, 0 },
-    { PIN_D3,       doingSomethingStart6,    doingSomethingStop6,    7,  50, 0, 0, 0, 0 },
-    { PIN_D4,       doingSomethingStart7,    doingSomethingStop7,    8,  55, 0, 0, 0, 0 },
-    { PIN_D5,       doingSomethingStart8,    doingSomethingStop8,    9,  60, 0, 0, 0, 0 },
-    { PIN_D6,       doingSomethingStart9,    doingSomethingStop9,   10,  65, 0, 0, 0, 0 },
-    { PIN_D7,       doingSomethingStart10,   doingSomethingStop10,  15,  70, 0, 0, 0, 0 },
-    { PIN_D8,       doingSomethingStart11,   doingSomethingStop11,  20,  75, 0, 0, 0, 0 },
-    { PIN_D9,       doingSomethingStart12,   doingSomethingStop12,  25,  80, 0, 0, 0, 0 },
-    { PIN_D10,      doingSomethingStart13,   doingSomethingStop13,  30,  85, 0, 0, 0, 0 },
-    { PIN_D11,      doingSomethingStart14,   doingSomethingStop14,  40,  90, 0, 0, 0, 0 },
-    { PIN_D12,      doingSomethingStart15,   doingSomethingStop15,  50,  95, 0, 0, 0, 0 }
-  };
-  
-  #else   // #if USING_PWM_FREQUENCY
-  
-  ISR_PWM_Data curISR_PWM_Data[] =
-  {
-    // pin, irqCallbackStartFunc, irqCallbackStopFunc, PWM_Period, PWM_DutyCycle, deltaMicrosStart, previousMicrosStart, deltaMicrosStop, previousMicrosStop
-    { LED_BUILTIN,  doingSomethingStart0,     doingSomethingStop0,   1000000L,  5, 0, 0, 0, 0 },
-    { LED_BLUE,     doingSomethingStart1,     doingSomethingStop1,    500000L, 10, 0, 0, 0, 0 },
-    { LED_RED,      doingSomethingStart2,     doingSomethingStop2,    333333L, 20, 0, 0, 0, 0 },
-    { PIN_D0,       doingSomethingStart3,     doingSomethingStop3,    250000L, 30, 0, 0, 0, 0 },
-    { PIN_D1,       doingSomethingStart4,     doingSomethingStop4,    200000L, 40, 0, 0, 0, 0 },
-    { PIN_D2,       doingSomethingStart5,     doingSomethingStop5,    166667L, 45, 0, 0, 0, 0 },
-    { PIN_D3,       doingSomethingStart6,     doingSomethingStop6,    142857L, 50, 0, 0, 0, 0 },
-    { PIN_D4,       doingSomethingStart7,     doingSomethingStop7,    125000L, 55, 0, 0, 0, 0 },
-    { PIN_D5,       doingSomethingStart8,     doingSomethingStop8,    111111L, 60, 0, 0, 0, 0 },
-    { PIN_D6,       doingSomethingStart9,     doingSomethingStop9,    100000L, 65, 0, 0, 0, 0 },
-    { PIN_D7,       doingSomethingStart10,    doingSomethingStop10,    66667L, 70, 0, 0, 0, 0 },
-    { PIN_D8,       doingSomethingStart11,    doingSomethingStop11,    50000L, 75, 0, 0, 0, 0 },
-    { PIN_D9,       doingSomethingStart12,    doingSomethingStop12,    40000L, 80, 0, 0, 0, 0 },
-    { PIN_D10,      doingSomethingStart13,    doingSomethingStop13,    33333L, 85, 0, 0, 0, 0 },
-    { PIN_D11,      doingSomethingStart14,    doingSomethingStop14,    25000L, 90, 0, 0, 0, 0 },
-    { PIN_D12,      doingSomethingStart15,    doingSomethingStop15,    20000L, 95, 0, 0, 0, 0 }
-  };
-  
-  #endif  // #if USING_PWM_FREQUENCY
-
-void doingSomethingStart(int index)
-{
-  uint64_t currentMicros  = micros();
-
-  curISR_PWM_Data[index].deltaMicrosStart    = currentMicros - curISR_PWM_Data[index].previousMicrosStart;
-  curISR_PWM_Data[index].previousMicrosStart = currentMicros;
-}
-
-void doingSomethingStop(int index)
-{
-  uint64_t currentMicros  = micros();
-
-  //curISR_PWM_Data[index].deltaMicrosStop     = currentMicros - curISR_PWM_Data[index].previousMicrosStop;
-  // Count from start to stop PWM pulse
-  curISR_PWM_Data[index].deltaMicrosStop     = currentMicros - curISR_PWM_Data[index].previousMicrosStart;
-  curISR_PWM_Data[index].previousMicrosStop  = currentMicros;
-}
-
-#else   // #if USE_COMPLEX_STRUCT
-
-irqCallback irqCallbackStartFunc[] =
-{
-  doingSomethingStart0,  doingSomethingStart1,  doingSomethingStart2,  doingSomethingStart3,
-  doingSomethingStart4,  doingSomethingStart5,  doingSomethingStart6,  doingSomethingStart7,
-  doingSomethingStart8,  doingSomethingStart9,  doingSomethingStart10, doingSomethingStart11,
-  doingSomethingStart12, doingSomethingStart13, doingSomethingStart14, doingSomethingStart15
-};
-
-irqCallback irqCallbackStopFunc[] =
-{
-  doingSomethingStop0,  doingSomethingStop1,  doingSomethingStop2,  doingSomethingStop3,
-  doingSomethingStop4,  doingSomethingStop5,  doingSomethingStop6,  doingSomethingStop7,
-  doingSomethingStop8,  doingSomethingStop9,  doingSomethingStop10, doingSomethingStop11,
-  doingSomethingStop12, doingSomethingStop13, doingSomethingStop14, doingSomethingStop15
-};
-
-#endif    // #if USE_COMPLEX_STRUCT
-
-//////////////////////////////////////////////////////
-
-#define SIMPLE_TIMER_MS        2000L
-
-// Init SimpleTimer
-SimpleTimer simpleTimer;
-
-// Here is software Timer, you can do somewhat fancy stuffs without many issues.
-// But always avoid
-// 1. Long delay() it just doing nothing and pain-without-gain wasting CPU power.Plan and design your code / strategy ahead
-// 2. Very long "do", "while", "for" loops without predetermined exit time.
-void simpleTimerDoingSomething2s()
-{
-  static uint64_t previousMicrosStart = startMicros;
-
-  uint64_t currMicros = micros();
-
-  Serial.print(F("SimpleTimer (ms): ")); Serial.print(SIMPLE_TIMER_MS);
-  Serial.print(F(", us : ")); Serial.print(currMicros);
-  Serial.print(F(", Dus : ")); Serial.println(currMicros - previousMicrosStart);
-
-  for (uint16_t i = 0; i < NUMBER_ISR_PWMS; i++)
-  {
-#if USE_COMPLEX_STRUCT
-    Serial.print(F("PWM Channel : ")); Serial.print(i);
-    Serial.print(F(", programmed Period (us): "));
-
-#if USING_PWM_FREQUENCY
-    Serial.print(1000000 / curISR_PWM_Data[i].PWM_Freq);
-#else
-    Serial.print(curISR_PWM_Data[i].PWM_Period);
-#endif
-
-    Serial.print(F(", actual : ")); Serial.print(curISR_PWM_Data[i].deltaMicrosStart);
-
-    Serial.print(F(", programmed DutyCycle : "));
-
-    Serial.print(curISR_PWM_Data[i].PWM_DutyCycle);
-
-    Serial.print(F(", actual : ")); Serial.println((float) curISR_PWM_Data[i].deltaMicrosStop * 100.0f / curISR_PWM_Data[i].deltaMicrosStart);
-
-#else
-
-    Serial.print(F("PWM Channel : ")); Serial.print(i);
-
-#if USING_PWM_FREQUENCY
-    Serial.print(1000000 / PWM_Freq[i]);
-#else
-    Serial.print(PWM_Period[i]);
-#endif
-
-    Serial.print(F(", programmed Period (us): ")); Serial.print(PWM_Period[i]);
-    Serial.print(F(", actual : ")); Serial.print(deltaMicrosStart[i]);
-
-    Serial.print(F(", programmed DutyCycle : "));
-
-    Serial.print(PWM_DutyCycle[i]);
-
-    Serial.print(F(", actual : ")); Serial.println( (float) deltaMicrosStop[i] * 100.0f / deltaMicrosStart[i]);
-
-#endif
-  }
-
-  previousMicrosStart = currMicros;
-}
-
-void setup()
-{
-  Serial.begin(115200);
-  while (!Serial);
-
-  delay(2000);
-
-  Serial.print(F("\nStarting ISR_16_PWMs_Array_Complex on ")); Serial.println(BOARD_NAME);
-  Serial.println(NRF52_SLOW_PWM_VERSION);
-
-  // Interval in microsecs
-  if (ITimer.attachInterruptInterval(HW_TIMER_INTERVAL_US, TimerHandler))
-  {
-    Serial.print(F("Starting ITimer OK, micros() = ")); Serial.println(startMicros);
-  }
-  else
-    Serial.println(F("Can't set ITimer. Select another freq. or timer"));
-
-  startMicros = micros();
-
-  // Just to demonstrate, don't use too many ISR Timers if not absolutely necessary
-  // You can use up to 16 timer for each ISR_PWM
-
-  for (uint16_t i = 0; i < NUMBER_ISR_PWMS; i++)
-  {
-#if USE_COMPLEX_STRUCT
-    curISR_PWM_Data[i].previousMicrosStart = startMicros;
-    //ISR_PWM.setInterval(curISR_PWM_Data[i].PWM_Period, curISR_PWM_Data[i].irqCallbackStartFunc);
-
-    //void setPWM(uint32_t pin, float frequency, float dutycycle
-    // , timer_callback_p StartCallback = nullptr, timer_callback_p StopCallback = nullptr)
-
-#if USING_PWM_FREQUENCY
-    // You can use this with PWM_Freq in Hz
-    ISR_PWM.setPWM(curISR_PWM_Data[i].PWM_Pin, curISR_PWM_Data[i].PWM_Freq, curISR_PWM_Data[i].PWM_DutyCycle,
-                   curISR_PWM_Data[i].irqCallbackStartFunc, curISR_PWM_Data[i].irqCallbackStopFunc);
-#else
-    // Or You can use this with PWM_Period in us
-    ISR_PWM.setPWM_Period(curISR_PWM_Data[i].PWM_Pin, curISR_PWM_Data[i].PWM_Period, curISR_PWM_Data[i].PWM_DutyCycle,
-                          curISR_PWM_Data[i].irqCallbackStartFunc, curISR_PWM_Data[i].irqCallbackStopFunc);
-#endif
-
-#else
-    previousMicrosStart[i] = micros();
-
-#if USING_PWM_FREQUENCY
-    // You can use this with PWM_Freq in Hz
-    ISR_PWM.setPWM(PWM_Pin[i], PWM_Freq[i], PWM_DutyCycle[i], irqCallbackStartFunc[i], irqCallbackStopFunc[i]);
-#else
-    // Or You can use this with PWM_Period in us
-    ISR_PWM.setPWM_Period(PWM_Pin[i], PWM_Period[i], PWM_DutyCycle[i], irqCallbackStartFunc[i], irqCallbackStopFunc[i]);
-#endif
-
-#endif
-  }
-
-  // You need this timer for non-critical tasks. Avoid abusing ISR if not absolutely necessary.
-  simpleTimer.setInterval(SIMPLE_TIMER_MS, simpleTimerDoingSomething2s);
-}
-
-#define BLOCKING_TIME_MS      10000L
-
-void loop()
-{
-  // This unadvised blocking task is used to demonstrate the blocking effects onto the execution and accuracy to Software timer
-  // You see the time elapse of ISR_PWM still accurate, whereas very unaccurate for Software Timer
-  // The time elapse for 2000ms software timer now becomes 3000ms (BLOCKING_TIME_MS)
-  // While that of ISR_PWM is still prefect.
-  delay(BLOCKING_TIME_MS);
-
-  // You need this Software timer for non-critical tasks. Avoid abusing ISR if not absolutely necessary
-  // You don't need to and never call ISR_PWM.run() here in the loop(). It's already handled by ISR timer.
-  simpleTimer.run();
-}
-```
 ---
 ---
 
@@ -878,7 +314,7 @@ The following is the sample terminal output when running example [ISR_16_PWMs_Ar
 
 ```
 Starting ISR_16_PWMs_Array_Complex on NRF52840_ITSYBITSY
-NRF52_Slow_PWM v1.2.0
+NRF52_Slow_PWM v1.2.1
 [PWM] NRF52TimerInterrupt: Timer =  NRF_TIMER3 , Timer Clock (Hz) =  16000000.00
 [PWM] Frequency =  200000.00 , _count =  80
 Starting ITimer OK, micros() = 
@@ -959,7 +395,7 @@ The following is the sample terminal output when running example [**ISR_16_PWMs_
 
 ```
 Starting ISR_16_PWMs_Array on NRF52840_ITSYBITSY
-NRF52_Slow_PWM v1.2.0
+NRF52_Slow_PWM v1.2.1
 [PWM] NRF52TimerInterrupt: Timer =  NRF_TIMER2 , Timer Clock (Hz) =  16000000.00
 [PWM] Frequency =  50000.00 , _count =  320
 Starting ITimer OK, micros() = 2889648
@@ -989,7 +425,7 @@ The following is the sample terminal output when running example [**ISR_16_PWMs_
 
 ```
 Starting ISR_16_PWMs_Array_Simple on NRF52840_ITSYBITSY
-NRF52_Slow_PWM v1.2.0
+NRF52_Slow_PWM v1.2.1
 [PWM] NRF52TimerInterrupt: Timer =  NRF_TIMER2 , Timer Clock (Hz) =  16000000.00
 [PWM] Frequency =  50000.00 , _count =  320
 Starting ITimer OK, micros() = 2924804
@@ -1019,14 +455,36 @@ The following is the sample terminal output when running example [ISR_Modify_PWM
 
 ```
 Starting ISR_Modify_PWM on NRF52840_ITSYBITSY
-NRF52_Slow_PWM v1.2.0
+NRF52_Slow_PWM v1.2.1
 [PWM] NRF52TimerInterrupt: Timer =  NRF_TIMER2 , Timer Clock (Hz) =  16000000.00
 [PWM] Frequency =  50000.00 , _count =  320
-Starting ITimer OK, micros() = 2669921
-Using PWM Freq = 1.00, PWM DutyCycle = 50.00
-Channel : 0	    Period : 1000000		OnTime : 500000	Start_Time : 2670898
-Channel : 0	New Period : 500000		OnTime : 450000	Start_Time : 12670898
-Channel : 0	New Period : 1000000		OnTime : 500000	Start_Time : 22670898
+Starting ITimer OK, micros() = 3310546
+Using PWM Freq = 200.00, PWM DutyCycle = 1.00
+Channel : 0	    Period : 5000		OnTime : 50	Start_Time : 3311523
+Channel : 0	    Period : 10000		OnTime : 555	Start_Time : 13313476
+Channel : 0	    Period : 5000		OnTime : 50	Start_Time : 23309570
+Channel : 0	    Period : 10000		OnTime : 555	Start_Time : 33310546
+Channel : 0	    Period : 5000		OnTime : 50	Start_Time : 43306640
+Channel : 0	    Period : 10000		OnTime : 555	Start_Time : 53313476
+Channel : 0	    Period : 5000		OnTime : 50	Start_Time : 63309570
+Channel : 0	    Period : 10000		OnTime : 555	Start_Time : 73316406
+Channel : 0	    Period : 5000		OnTime : 50	Start_Time : 83312500
+Channel : 0	    Period : 10000		OnTime : 555	Start_Time : 93319335
+Channel : 0	    Period : 5000		OnTime : 50	Start_Time : 103315429
+Channel : 0	    Period : 10000		OnTime : 555	Start_Time : 113322265
+Channel : 0	    Period : 5000		OnTime : 50	Start_Time : 123318359
+Channel : 0	    Period : 10000		OnTime : 555	Start_Time : 133325195
+Channel : 0	    Period : 5000		OnTime : 50	Start_Time : 143326171
+Channel : 0	    Period : 10000		OnTime : 555	Start_Time : 153322265
+Channel : 0	    Period : 5000		OnTime : 50	Start_Time : 163318359
+Channel : 0	    Period : 10000		OnTime : 555	Start_Time : 173325195
+Channel : 0	    Period : 5000		OnTime : 50	Start_Time : 183321289
+Channel : 0	    Period : 10000		OnTime : 555	Start_Time : 193328125
+Channel : 0	    Period : 5000		OnTime : 50	Start_Time : 203324218
+Channel : 0	    Period : 10000		OnTime : 555	Start_Time : 213331054
+Channel : 0	    Period : 5000		OnTime : 50	Start_Time : 223327148
+Channel : 0	    Period : 10000		OnTime : 555	Start_Time : 233333984
+
 ```
 
 ---
@@ -1037,7 +495,7 @@ The following is the sample terminal output when running example [ISR_Changing_P
 
 ```
 Starting ISR_Changing_PWM on NRF52840_ITSYBITSY
-NRF52_Slow_PWM v1.2.0
+NRF52_Slow_PWM v1.2.1
 [PWM] NRF52TimerInterrupt: Timer =  NRF_TIMER2 , Timer Clock (Hz) =  16000000.00
 [PWM] Frequency =  50000.00 , _count =  320
 Starting ITimer OK, micros() = 2925781
@@ -1107,6 +565,8 @@ Submit issues to: [nRF52_Slow_PWM issues](https://github.com/khoih-prog/nRF52_Sl
 5. Optimize library code by using `reference-passing` instead of `value-passing`
 6. Improve accuracy by using `float`, instead of `uint32_t` for `dutycycle`
 7. DutyCycle to be optionally updated at the end current PWM period instead of immediately.
+8. Display informational warning only when `_PWM_LOGLEVEL_` > 3
+9. Add support to `Sparkfun Pro nRF52840 Mini`
 
 
 ---
