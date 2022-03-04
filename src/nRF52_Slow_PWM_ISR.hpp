@@ -35,13 +35,13 @@
 #endif
 
 #ifndef NRF52_SLOW_PWM_VERSION
-  #define NRF52_SLOW_PWM_VERSION           "NRF52_Slow_PWM v1.2.0"
+  #define NRF52_SLOW_PWM_VERSION           "NRF52_Slow_PWM v1.2.1"
   
   #define NRF52_SLOW_PWM_VERSION_MAJOR      1
   #define NRF52_SLOW_PWM_VERSION_MINOR      2
-  #define NRF52_SLOW_PWM_VERSION_PATCH      0
+  #define NRF52_SLOW_PWM_VERSION_PATCH      1
 
-  #define NRF52_SLOW_PWM_VERSION_INT        1002000  
+  #define NRF52_SLOW_PWM_VERSION_INT        1002000 1
 #endif
 
 #ifndef _PWM_LOGLEVEL_
