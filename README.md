@@ -69,7 +69,7 @@ As more complex calculation and check **inside ISR** are introduced from v1.2.0,
 You can modify to use larger `HW_TIMER_INTERVAL_US`, (from current 10uS), according to your board and use-case if crash happens.
 
 
-```
+```cpp
 // Don't change these numbers to make higher Timer freq. System can hang
 #define HW_TIMER_INTERVAL_US      10L
 ```
@@ -126,8 +126,9 @@ The catch is **your function is now part of an ISR (Interrupt Service Routine), 
 
 ### Currently supported Boards
 
-1. **nRF52-based boards** such as **AdaFruit Itsy-Bitsy nRF52840, Feather nRF52840 Express**, etc., using [`Adafruit nRF52 core`](https://github.com/adafruit/Adafruit_nRF52_Arduino)
+1. **AdaFruit Feather nRF52832, nRF52840 Express, BlueFruit Sense, Itsy-Bitsy nRF52840 Express, Metro nRF52840 Express, NINA_B302_ublox, NINA_B112_ublox etc.**
 2. **Sparkfun Pro nRF52840 Mini**
+3. **Seeeduino nRF52840-based boards such as SEEED_XIAO_NRF52840 and SEEED_XIAO_NRF52840_SENSE**, etc. using Seeeduino `nRF%2` core
 
 ---
 
@@ -144,8 +145,9 @@ The catch is **your function is now part of an ISR (Interrupt Service Routine), 
 
  1. [`Arduino IDE 1.8.19+` for Arduino](https://github.com/arduino/Arduino). [![GitHub release](https://img.shields.io/github/release/arduino/Arduino.svg)](https://github.com/arduino/Arduino/releases/latest)
  2. [`Adafruit nRF52 v1.3.0+`](https://github.com/adafruit/Adafruit_nRF52_Arduino) for nRF52 boards such as Adafruit NRF52840_FEATHER, NRF52832_FEATHER, NRF52840_FEATHER_SENSE, NRF52840_ITSYBITSY, NRF52840_CIRCUITPLAY, NRF52840_CLUE, NRF52840_METRO, NRF52840_PCA10056, PARTICLE_XENON, **NINA_B302_ublox**, etc. [![GitHub release](https://img.shields.io/github/release/adafruit/Adafruit_nRF52_Arduino.svg)](https://github.com/adafruit/Adafruit_nRF52_Arduino/releases/latest)
+ 3. [`Seeeduino nRF52 core 1.0.0+`](https://github.com/Seeed-Studio/Adafruit_nRF52_Arduino) for Seeeduino nRF52840-based boards such as **Seeed_XIAO_NRF52840 and Seeed_XIAO_NRF52840_SENSE**. [![GitHub release](https://img.shields.io/github/release/Seeed-Studio/Adafruit_nRF52_Arduino.svg)](https://github.com/Seeed-Studio/Adafruit_nRF52_Arduino/releases/latest)
  
- 3. To use with certain example
+ 4. To use with certain example
    - [`SimpleTimer library`](https://github.com/jfturcot/SimpleTimer) for [ISR_16_PWMs_Array_Complex example](examples/ISR_16_PWMs_Array_Complex).
 
 
@@ -164,9 +166,9 @@ You can also use this link [![arduino-library-badge](https://www.ardu-badge.com/
 Another way to install is to:
 
 1. Navigate to [**nRF52_Slow_PWM**](https://github.com/khoih-prog/nRF52_Slow_PWM) page.
-2. Download the latest release `nRF52_Slow_PWM-master.zip`.
-3. Extract the zip file to `nRF52_Slow_PWM-master` directory 
-4. Copy whole `nRF52_Slow_PWM-master` folder to Arduino libraries' directory such as `~/Arduino/libraries/`.
+2. Download the latest release `nRF52_Slow_PWM-main.zip`.
+3. Extract the zip file to `nRF52_Slow_PWM-main` directory 
+4. Copy whole `nRF52_Slow_PWM-main` folder to Arduino libraries' directory such as `~/Arduino/libraries/`.
 
 ### VS Code & PlatformIO
 
@@ -207,6 +209,26 @@ These files must be copied into the directory:
 
 ---
 
+#### 2. For Seeeduino nRF52840 boards
+
+**To be able to compile and run on Xiao nRF52840 boards**, you have to copy the whole [nRF52 1.0.0](Packages_Patches/Seeeduino/hardware/nrf52/1.0.0) directory into Seeeduino nRF52 directory (~/.arduino15/packages/Seeeduino/hardware/nrf52/1.0.0). 
+
+Supposing the Seeeduino nRF52 version is 1.0.0. These files must be copied into the directory:
+
+- **`~/.arduino15/packages/Seeeduino/hardware/nrf52/1.0.0/cores/nRF5/Print.h`**
+- **`~/.arduino15/packages/Seeeduino/hardware/nrf52/1.0.0/cores/nRF5/Print.cpp`**
+- **`~/.arduino15/packages/Seeeduino/hardware/nrf52/1.0.0/cores/nRF5/Udp.h`**
+
+Whenever a new version is installed, remember to copy these files into the new version directory. For example, new version is x.yy.z
+These files must be copied into the directory:
+
+- **`~/.arduino15/packages/Seeeduino/hardware/nrf52/x.yy.z/cores/nRF5/Print.h`**
+- **`~/.arduino15/packages/Seeeduino/hardware/nrf52/x.yy.z/cores/nRF5/Print.cpp`**
+- **`~/.arduino15/packages/Seeeduino/hardware/nrf52/x.yy.z/cores/nRF5/Udp.h`**
+
+
+---
+
 To use `Sparkfun Pro nRF52840 Mini`, you must install `Packages_Patches` and use Adafruit nrf52 core v1.0.0+
 
 ---
@@ -218,14 +240,14 @@ The current library implementation, using `xyz-Impl.h` instead of standard `xyz.
 
 You can include this `.hpp` file
 
-```
+```cpp
 // Can be included as many times as necessary, without `Multiple Definitions` Linker Error
 #include "nRF52_Slow_PWM.hpp"    //https://github.com/khoih-prog/nRF52_Slow_PWM
 ```
 
 in many files. But be sure to use the following `.h` file **in just 1 `.h`, `.cpp` or `.ino` file**, which must **not be included in any other file**, to avoid `Multiple Definitions` Linker Error
 
-```
+```cpp
 // To be included only in main(), .ino with setup() to avoid `Multiple Definitions` Linker Error
 #include "nRF52_Slow_PWM.h"      //https://github.com/khoih-prog/nRF52_Slow_PWM
 ```
@@ -246,7 +268,7 @@ Before using any Timer, you have to make sure the Timer has not been used by any
 
 #### 1. Init Hardware Timer
 
-```
+```cpp
 // Depending on the board, you can select NRF52 Hardware Timer from NRF_TIMER_1-NRF_TIMER_4 (1 to 4)
 // If you select the already-used NRF_TIMER_0, it'll be auto modified to use NRF_TIMER_1
 
@@ -259,7 +281,7 @@ NRF52_Slow_PWM ISR_PWM;
 
 #### 2. Set PWM Frequency, dutycycle, attach irqCallbackStartFunc and irqCallbackStopFunc functions
 
-```
+```cpp
 void irqCallbackStartFunc()
 {
 
@@ -299,7 +321,7 @@ void setup()
 
 ### Example [ISR_16_PWMs_Array_Complex](examples/ISR_16_PWMs_Array_Complex)
 
-https://github.com/khoih-prog/nRF52_Slow_PWM/blob/7b69f80edd248eb72236a2e74e8053cf43236286/examples/ISR_16_PWMs_Array_Complex/ISR_16_PWMs_Array_Complex.ino#L16-L581
+https://github.com/khoih-prog/nRF52_Slow_PWM/blob/2c86fbfde1ea38be2f4ff90c2ca818ca225e5315/examples/ISR_16_PWMs_Array_Complex/ISR_16_PWMs_Array_Complex.ino#L16-L595
 
 
 ---
@@ -314,7 +336,7 @@ The following is the sample terminal output when running example [ISR_16_PWMs_Ar
 
 ```
 Starting ISR_16_PWMs_Array_Complex on NRF52840_ITSYBITSY
-NRF52_Slow_PWM v1.2.1
+NRF52_Slow_PWM v1.2.2
 [PWM] NRF52TimerInterrupt: Timer =  NRF_TIMER3 , Timer Clock (Hz) =  16000000.00
 [PWM] Frequency =  200000.00 , _count =  80
 Starting ITimer OK, micros() = 
@@ -395,7 +417,7 @@ The following is the sample terminal output when running example [**ISR_16_PWMs_
 
 ```
 Starting ISR_16_PWMs_Array on NRF52840_ITSYBITSY
-NRF52_Slow_PWM v1.2.1
+NRF52_Slow_PWM v1.2.2
 [PWM] NRF52TimerInterrupt: Timer =  NRF_TIMER2 , Timer Clock (Hz) =  16000000.00
 [PWM] Frequency =  50000.00 , _count =  320
 Starting ITimer OK, micros() = 2889648
@@ -425,7 +447,7 @@ The following is the sample terminal output when running example [**ISR_16_PWMs_
 
 ```
 Starting ISR_16_PWMs_Array_Simple on NRF52840_ITSYBITSY
-NRF52_Slow_PWM v1.2.1
+NRF52_Slow_PWM v1.2.2
 [PWM] NRF52TimerInterrupt: Timer =  NRF_TIMER2 , Timer Clock (Hz) =  16000000.00
 [PWM] Frequency =  50000.00 , _count =  320
 Starting ITimer OK, micros() = 2924804
@@ -455,7 +477,7 @@ The following is the sample terminal output when running example [ISR_Modify_PWM
 
 ```
 Starting ISR_Modify_PWM on NRF52840_ITSYBITSY
-NRF52_Slow_PWM v1.2.1
+NRF52_Slow_PWM v1.2.2
 [PWM] NRF52TimerInterrupt: Timer =  NRF_TIMER2 , Timer Clock (Hz) =  16000000.00
 [PWM] Frequency =  50000.00 , _count =  320
 Starting ITimer OK, micros() = 3310546
@@ -495,7 +517,7 @@ The following is the sample terminal output when running example [ISR_Changing_P
 
 ```
 Starting ISR_Changing_PWM on NRF52840_ITSYBITSY
-NRF52_Slow_PWM v1.2.1
+NRF52_Slow_PWM v1.2.2
 [PWM] NRF52TimerInterrupt: Timer =  NRF_TIMER2 , Timer Clock (Hz) =  16000000.00
 [PWM] Frequency =  50000.00 , _count =  320
 Starting ITimer OK, micros() = 2925781
@@ -558,15 +580,18 @@ Submit issues to: [nRF52_Slow_PWM issues](https://github.com/khoih-prog/nRF52_Sl
 
 ## DONE
 
-1. Basic hardware multi-channel PWM for **nRF52-based AdaFruit Itsy-Bitsy nRF52840, Feather nRF52840 Express, etc.** using [`Adafruit nRF52 core`](https://github.com/adafruit/Adafruit_nRF52_Arduino)
-2. Add Table of Contents
-3. Add functions to modify PWM settings on-the-fly
-4. Fix `multiple-definitions` linker error
-5. Optimize library code by using `reference-passing` instead of `value-passing`
-6. Improve accuracy by using `float`, instead of `uint32_t` for `dutycycle`
-7. DutyCycle to be optionally updated at the end current PWM period instead of immediately.
-8. Display informational warning only when `_PWM_LOGLEVEL_` > 3
-9. Add support to `Sparkfun Pro nRF52840 Mini`
+ 1. Basic hardware multi-channel PWM for **nRF52-based AdaFruit Itsy-Bitsy nRF52840, Feather nRF52840 Express, etc.** using [`Adafruit nRF52 core`](https://github.com/adafruit/Adafruit_nRF52_Arduino)
+ 2. Add Table of Contents
+ 3. Add functions to modify PWM settings on-the-fly
+ 4. Fix `multiple-definitions` linker error
+ 5. Optimize library code by using `reference-passing` instead of `value-passing`
+ 6. Improve accuracy by using `float`, instead of `uint32_t` for `dutycycle`
+ 7. DutyCycle to be optionally updated at the end current PWM period instead of immediately.
+ 8. Display informational warning only when `_PWM_LOGLEVEL_` > 3
+ 9. Add support to `Sparkfun Pro nRF52840 Mini`
+10. Add support to Seeeduino nRF52840-based boards such as **SEEED_XIAO_NRF52840 and SEEED_XIAO_NRF52840_SENSE**, etc. using Seeeduino `nRF%2` core
+11. Add astyle using `allman` style. Restyle the library
+12. Add `Packages' Patches` to add Seeeduino `nRF52` core
 
 
 ---
