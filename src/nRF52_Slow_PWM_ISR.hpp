@@ -12,7 +12,7 @@
   Therefore, their executions are not blocked by bad-behaving functions / tasks.
   This important feature is absolutely necessary for mission-critical tasks.
 
-  Version: 1.2.1
+  Version: 1.2.2
 
   Version Modified By   Date      Comments
   ------- -----------  ---------- -----------
@@ -20,6 +20,7 @@
   1.1.0   K Hoang      10/11/2021 Add functions to modify PWM settings on-the-fly
   1.2.0   K.Hoang      07/02/2022 Fix `multiple-definitions` linker error. Improve accuracy. Optimize code. Fix bug
   1.2.1   K Hoang      03/03/2022 Fix `DutyCycle` and `New Period` display bugs. Display warning only when debug level > 3
+  1.2.2   K.Hoang      26/10/2022 Add support to Seeed_XIAO_NRF52840 and Seeed_XIAO_NRF52840_SENSE
 *****************************************************************************************************************************/
 
 #pragma once
@@ -30,23 +31,40 @@
 #if !(defined(NRF52840_FEATHER) || defined(NRF52832_FEATHER) || defined(NRF52_SERIES) || defined(ARDUINO_NRF52_ADAFRUIT) || \
       defined(NRF52840_FEATHER_SENSE) || defined(NRF52840_ITSYBITSY) || defined(NRF52840_CIRCUITPLAY) || \
       defined(NRF52840_CLUE) || defined(NRF52840_METRO) || defined(NRF52840_PCA10056) || defined(PARTICLE_XENON) || \
-      defined(MDBT50Q_RX) || defined(NINA_B302_ublox) || defined(NINA_B112_ublox) )
-  #error This code is designed to run on nRF52 platform! Please check your Tools->Board setting.
+      defined(NRF52840_LED_GLASSES) || defined(MDBT50Q_RX) || defined(NINA_B302_ublox) || defined(NINA_B112_ublox) || \
+      defined(ARDUINO_Seeed_XIAO_nRF52840) || defined(ARDUINO_Seeed_XIAO_nRF52840_Sense) )
+  #error This code is designed to run on Adafruit or Seeed nRF52 platform! Please check your Tools->Board setting.
 #endif
 
+////////////////////////////////////////
+
+#if !defined(BOARD_NAME)
+	#if defined(ARDUINO_Seeed_XIAO_nRF52840)
+		#define BOARD_NAME		"Seeed_XIAO_nRF52840"
+	#elif defined(ARDUINO_Seeed_XIAO_nRF52840_Sense)
+		#define BOARD_NAME		"Seeed_XIAO_nRF52840_Sense"
+	#endif
+#endif
+
+////////////////////////////////////////
+
 #ifndef NRF52_SLOW_PWM_VERSION
-  #define NRF52_SLOW_PWM_VERSION           "NRF52_Slow_PWM v1.2.1"
+  #define NRF52_SLOW_PWM_VERSION           "NRF52_Slow_PWM v1.2.2"
   
   #define NRF52_SLOW_PWM_VERSION_MAJOR      1
   #define NRF52_SLOW_PWM_VERSION_MINOR      2
-  #define NRF52_SLOW_PWM_VERSION_PATCH      1
+  #define NRF52_SLOW_PWM_VERSION_PATCH      2
 
-  #define NRF52_SLOW_PWM_VERSION_INT        1002000 1
+  #define NRF52_SLOW_PWM_VERSION_INT        1002002
 #endif
+
+////////////////////////////////////////
 
 #ifndef _PWM_LOGLEVEL_
   #define _PWM_LOGLEVEL_        1
 #endif
+
+////////////////////////////////////////
 
 #include "PWM_Generic_Debug.h"
 
@@ -62,10 +80,14 @@
   #endif
 #endif
 
+////////////////////////////////////////
+
 #define NRF52_Slow_PWM_ISR  NRF52_Slow_PWM
 
 typedef void (*timer_callback)();
 typedef void (*timer_callback_p)(void *);
+
+////////////////////////////////////////
 
 #if !defined(USING_MICROS_RESOLUTION)
 
@@ -75,6 +97,8 @@ typedef void (*timer_callback_p)(void *);
     
   #define USING_MICROS_RESOLUTION       false
 #endif
+
+////////////////////////////////////////
 
 #if !defined(CHANGING_PWM_END_OF_CYCLE)
   #if (_PWM_LOGLEVEL_ > 3)
@@ -131,6 +155,8 @@ class NRF52_Slow_PWM_ISR
       return setupPWMChannel(pin, period, dutycycle, (void *) StartCallback, (void *) StopCallback);   
     }
 
+    ////////////////////////////////////////
+
     // period in us
     // Return the channelNum if OK, -1 if error
     int setPWM_Period(const uint32_t& pin, const uint32_t& period, const float& dutycycle, 
@@ -138,8 +164,8 @@ class NRF52_Slow_PWM_ISR
     {     
       return setupPWMChannel(pin, period, dutycycle, (void *) StartCallback, (void *) StopCallback);      
     } 
-    
-    //////////////////////////////////////////////////////////////////
+
+    ////////////////////////////////////////
     
     // low level function to modify a PWM channel
     // returns the true on success or false on failure
@@ -165,13 +191,13 @@ class NRF52_Slow_PWM_ISR
       
       return modifyPWMChannel_Period(channelNum, pin, period, dutycycle);
     }
-    
-    //////////////////////////////////////////////////////////////////
-    
+
+    ////////////////////////////////////////
+
     //period in us
     bool modifyPWMChannel_Period(const uint8_t& channelNum, const uint32_t& pin, const uint32_t& period, const float& dutycycle);
-    
-    //////////////////////////////////////////////////////////////////
+
+    ////////////////////////////////////////
 
     // destroy the specified PWM channel
     void deleteChannel(const uint8_t& channelNum);
@@ -200,6 +226,8 @@ class NRF52_Slow_PWM_ISR
     // returns the number of used PWM channels
     int8_t getnumChannels();
 
+    ////////////////////////////////////////
+
     // returns the number of available PWM channels
     uint8_t getNumAvailablePWMChannels() 
     {
@@ -208,6 +236,8 @@ class NRF52_Slow_PWM_ISR
       else 
         return MAX_NUMBER_CHANNELS - numChannels;
     };
+
+    ////////////////////////////////////////
 
   private:
 
@@ -219,13 +249,10 @@ class NRF52_Slow_PWM_ISR
     // find the first available slot
     int findFirstFreeSlot();
 
+    ////////////////////////////////////////
+
     typedef struct 
-    {
-      ///////////////////////////////////
-      
-      
-      ///////////////////////////////////
-      
+    {          
       uint64_t      prevTime;           // value returned by the micros() or millis() function in the previous run() call
       uint32_t      period;             // period value, in us / ms
       uint32_t      onTime;             // onTime value, ( period * dutyCycle / 100 ) us  / ms
@@ -246,6 +273,8 @@ class NRF52_Slow_PWM_ISR
       uint32_t      newOnTime;          // onTime value, ( period * dutyCycle / 100 ) us  / ms
       float         newDutyCycle;       // from 0.00 to 100.00, float precision
     } PWM_t;
+
+    ////////////////////////////////////////
 
     volatile PWM_t PWM[MAX_NUMBER_CHANNELS];
 

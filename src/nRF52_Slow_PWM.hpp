@@ -12,7 +12,7 @@
   Therefore, their executions are not blocked by bad-behaving functions / tasks.
   This important feature is absolutely necessary for mission-critical tasks.
 
-  Version: 1.2.1
+  Version: 1.2.2
 
   Version Modified By   Date      Comments
   ------- -----------  ---------- -----------
@@ -20,6 +20,7 @@
   1.1.0   K Hoang      10/11/2021 Add functions to modify PWM settings on-the-fly
   1.2.0   K.Hoang      07/02/2022 Fix `multiple-definitions` linker error. Improve accuracy. Optimize code. Fix bug
   1.2.1   K Hoang      03/03/2022 Fix `DutyCycle` and `New Period` display bugs. Display warning only when debug level > 3
+  1.2.2   K.Hoang      26/10/2022 Add support to Seeed_XIAO_NRF52840 and Seeed_XIAO_NRF52840_SENSE
 *****************************************************************************************************************************/
 
 /*
@@ -69,23 +70,40 @@
 #if !(defined(NRF52840_FEATHER) || defined(NRF52832_FEATHER) || defined(NRF52_SERIES) || defined(ARDUINO_NRF52_ADAFRUIT) || \
       defined(NRF52840_FEATHER_SENSE) || defined(NRF52840_ITSYBITSY) || defined(NRF52840_CIRCUITPLAY) || \
       defined(NRF52840_CLUE) || defined(NRF52840_METRO) || defined(NRF52840_PCA10056) || defined(PARTICLE_XENON) || \
-      defined(MDBT50Q_RX) || defined(NINA_B302_ublox) || defined(NINA_B112_ublox) )
-  #error This code is designed to run on nRF52 platform! Please check your Tools->Board setting.
+      defined(NRF52840_LED_GLASSES) || defined(MDBT50Q_RX) || defined(NINA_B302_ublox) || defined(NINA_B112_ublox) || \
+      defined(ARDUINO_Seeed_XIAO_nRF52840) || defined(ARDUINO_Seeed_XIAO_nRF52840_Sense) )
+  #error This code is designed to run on Adafruit or Seeed nRF52 platform! Please check your Tools->Board setting.
 #endif
 
+////////////////////////////////////////
+
+#if !defined(BOARD_NAME)
+	#if defined(ARDUINO_Seeed_XIAO_nRF52840)
+		#define BOARD_NAME		"Seeed_XIAO_nRF52840"
+	#elif defined(ARDUINO_Seeed_XIAO_nRF52840_Sense)
+		#define BOARD_NAME		"Seeed_XIAO_nRF52840_Sense"
+	#endif
+#endif
+
+////////////////////////////////////////
+
 #ifndef NRF52_SLOW_PWM_VERSION
-  #define NRF52_SLOW_PWM_VERSION           "NRF52_Slow_PWM v1.2.1"
+  #define NRF52_SLOW_PWM_VERSION           "NRF52_Slow_PWM v1.2.2"
   
   #define NRF52_SLOW_PWM_VERSION_MAJOR      1
   #define NRF52_SLOW_PWM_VERSION_MINOR      2
-  #define NRF52_SLOW_PWM_VERSION_PATCH      1
+  #define NRF52_SLOW_PWM_VERSION_PATCH      2
 
-  #define NRF52_SLOW_PWM_VERSION_INT        1002001
+  #define NRF52_SLOW_PWM_VERSION_INT        1002002
 #endif
+
+////////////////////////////////////////
 
 #ifndef _PWM_LOGLEVEL_
   #define _PWM_LOGLEVEL_        1
 #endif
+
+////////////////////////////////////////
 
 #include <Arduino.h>
 #include "nrf_timer.h"
@@ -94,11 +112,15 @@
 
 #include "PWM_Generic_Debug.h"
 
+////////////////////////////////////////
+
 class NRF52TimerInterrupt;
 
 typedef NRF52TimerInterrupt NRF52Timer;
 
 typedef void (*timerCallback)  ();
+
+////////////////////////////////////////
 
 typedef enum
 {
@@ -110,6 +132,8 @@ typedef enum
   NRF_MAX_TIMER
 } NRF52TimerNumber;
 
+////////////////////////////////////////
+
 static const char* NRF52TimerName[NRF_MAX_TIMER] =
 {
   "NRF_TIMER0-DON'T_USE_THIS",
@@ -118,6 +142,8 @@ static const char* NRF52TimerName[NRF_MAX_TIMER] =
   "NRF_TIMER3",
   "NRF_TIMER4",
 };
+
+////////////////////////////////////////
 
 /*
 typedef enum
@@ -135,12 +161,15 @@ typedef enum
 
 class NRF52TimerInterrupt;
 
+////////////////////////////////////////
+
 static NRF_TIMER_Type* nrf_timers    [NRF_MAX_TIMER] = { NRF_TIMER0, NRF_TIMER1, NRF_TIMER2, NRF_TIMER3, NRF_TIMER4 };
 
 static IRQn_Type       nrf_timers_irq[NRF_MAX_TIMER] = { TIMER0_IRQn, TIMER1_IRQn, TIMER2_IRQn, TIMER3_IRQn, TIMER4_IRQn };
 
 static NRF52TimerInterrupt*  nRF52Timers [NRF_MAX_TIMER] = { NULL, NULL, NULL, NULL, NULL };
 
+////////////////////////////////////////
 
 class NRF52TimerInterrupt
 {
@@ -163,6 +192,8 @@ class NRF52TimerInterrupt
     uint32_t              _timerCount;      // count to activate timer
 
   public:
+
+    ////////////////////////////////////////
 
     NRF52TimerInterrupt(uint8_t timer = NRF_TIMER_1)
     {
@@ -216,11 +247,15 @@ class NRF52TimerInterrupt
         break;            
       } 
     };
+
+    ////////////////////////////////////////
     
     ~NRF52TimerInterrupt()
     {
       nRF52Timers[_timer] = NULL;
     }
+
+    ////////////////////////////////////////
 
     // frequency (in hertz) and duration (in milliseconds). Duration = 0 or not specified => run indefinitely
     // No params and duration now. To be addes in the future by adding similar functions here or to NRF52-hal-timer.c
@@ -270,6 +305,8 @@ class NRF52TimerInterrupt
       return true;
     }
 
+    ////////////////////////////////////////
+
     // interval (in microseconds) and duration (in milliseconds). Duration = 0 or not specified => run indefinitely
     // No params and duration now. To be addes in the future by adding similar functions here or to NRF52-hal-timer.c
     bool setInterval(unsigned long interval, timerCallback callback)
@@ -277,10 +314,14 @@ class NRF52TimerInterrupt
       return setFrequency((float) (1000000.0f / interval), callback);
     }
 
+    ////////////////////////////////////////
+
     bool attachInterrupt(const float& frequency, timerCallback callback)
     {
       return setFrequency(frequency, callback);
     }
+
+    ////////////////////////////////////////
 
     // interval (in microseconds) and duration (in milliseconds). Duration = 0 or not specified => run indefinitely
     // No params and duration now. To be addes in the future by adding similar functions here or to NRF52-hal-timer.c
@@ -288,6 +329,8 @@ class NRF52TimerInterrupt
     {
       return setFrequency( (float) ( 1000000.0f / interval), callback);
     }
+
+    ////////////////////////////////////////
 
     void detachInterrupt()
     {
@@ -305,16 +348,22 @@ class NRF52TimerInterrupt
       nrf_timer_event_clear(nrf_timer, event);
     }
 
+    ////////////////////////////////////////
+
     void disableTimer()
     {
       detachInterrupt();
     }
+
+    ////////////////////////////////////////
 
     // Duration (in milliseconds). Duration = 0 or not specified => run indefinitely
     void reattachInterrupt()
     {
       setFrequency(_frequency, _callback);
     }
+
+    ////////////////////////////////////////
 
     // Duration (in milliseconds). Duration = 0 or not specified => run indefinitely
     void enableTimer()
@@ -334,27 +383,38 @@ class NRF52TimerInterrupt
       nrf_timer_cc_set(nrf_timer, cc_channel, _timerCount);
     }
 
+    ////////////////////////////////////////
+
     // Just stop clock source, clear the count
     void stopTimer()
     {
       disableTimer();
     }
 
+    ////////////////////////////////////////
+
     // Just reconnect clock source, start current count from 0
     void restartTimer()
     {
       enableTimer();
     }
+
+    ////////////////////////////////////////
     
-    timerCallback getCallback()
+    inline timerCallback getCallback()
     {
       return _callback;
     }
+
+    ////////////////////////////////////////
     
-    IRQn_Type getTimerIRQn()
+    inline IRQn_Type getTimerIRQn()
     {
       return _timer_IRQ;
     }
+
+    ////////////////////////////////////////
+    
 }; // class NRF52TimerInterrupt
 
 
