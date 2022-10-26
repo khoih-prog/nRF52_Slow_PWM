@@ -20,25 +20,26 @@
 
 void setup()
 {
-	Serial.begin(115200);
+  Serial.begin(115200);
 
-	while (!Serial && millis() < 5000);
+  while (!Serial && millis() < 5000);
 
-	Serial.println("\nStart multiFileProject on "); Serial.println(BOARD_NAME);
-	Serial.println(NRF52_SLOW_PWM_VERSION);
+  Serial.println("\nStart multiFileProject on ");
+  Serial.println(BOARD_NAME);
+  Serial.println(NRF52_SLOW_PWM_VERSION);
 
 #if defined(NRF52_SLOW_PWM_VERSION_MIN)
 
-	if (NRF52_SLOW_PWM_VERSION_INT < NRF52_SLOW_PWM_VERSION_MIN)
-	{
-		Serial.print("Warning. Must use this example on Version equal or later than : ");
-		Serial.println(NRF52_SLOW_PWM_VERSION_MIN_TARGET);
-	}
+  if (NRF52_SLOW_PWM_VERSION_INT < NRF52_SLOW_PWM_VERSION_MIN)
+  {
+    Serial.print("Warning. Must use this example on Version equal or later than : ");
+    Serial.println(NRF52_SLOW_PWM_VERSION_MIN_TARGET);
+  }
 
 #endif
 }
 
 void loop()
 {
-	// put your main code here, to run repeatedly:
+  // put your main code here, to run repeatedly:
 }

@@ -27,7 +27,7 @@
 #define LED_ON              LOW
 
 #ifndef LED_BUILTIN
-	#define LED_BUILTIN       25
+  #define LED_BUILTIN       25
 #endif
 
 #ifndef LED_BLUE_PIN
@@ -63,7 +63,7 @@ NRF52_Slow_PWM ISR_PWM;
 
 void TimerHandler()
 {
-	ISR_PWM.run();
+  ISR_PWM.run();
 }
 
 //////////////////////////////////////////////////////
@@ -97,46 +97,47 @@ int channelNum;
 
 void setup()
 {
-	Serial.begin(115200);
+  Serial.begin(115200);
 
-	while (!Serial && millis() < 5000);
+  while (!Serial && millis() < 5000);
 
-	delay(2000);
+  delay(2000);
 
-	Serial.print(F("\nStarting ISR_Modify_PWM on "));	Serial.println(BOARD_NAME);
-	Serial.println(NRF52_SLOW_PWM_VERSION);
+  Serial.print(F("\nStarting ISR_Modify_PWM on "));
+  Serial.println(BOARD_NAME);
+  Serial.println(NRF52_SLOW_PWM_VERSION);
 
-	// Interval in microsecs
-	if (ITimer.attachInterruptInterval(HW_TIMER_INTERVAL_US, TimerHandler))
-	{
-		startMicros = micros();
-		Serial.print(F("Starting ITimer OK, micros() = "));
-		Serial.println(startMicros);
-	}
-	else
-		Serial.println(F("Can't set ITimer. Select another freq. or timer"));
+  // Interval in microsecs
+  if (ITimer.attachInterruptInterval(HW_TIMER_INTERVAL_US, TimerHandler))
+  {
+    startMicros = micros();
+    Serial.print(F("Starting ITimer OK, micros() = "));
+    Serial.println(startMicros);
+  }
+  else
+    Serial.println(F("Can't set ITimer. Select another freq. or timer"));
 
-	// Just to demonstrate, don't use too many ISR Timers if not absolutely necessary
-	// You can use up to 16 timer for each ISR_PWM
-	//void setPWM(uint32_t pin, uint32_t frequency, uint32_t dutycycle
-	// , timer_callback_p StartCallback = nullptr, timer_callback_p StopCallback = nullptr)
-	Serial.print(F("Using PWM Freq = "));
-	Serial.print(PWM_Freq1);
-	Serial.print(F(", PWM DutyCycle = "));
-	Serial.println(PWM_DutyCycle1);
+  // Just to demonstrate, don't use too many ISR Timers if not absolutely necessary
+  // You can use up to 16 timer for each ISR_PWM
+  //void setPWM(uint32_t pin, uint32_t frequency, uint32_t dutycycle
+  // , timer_callback_p StartCallback = nullptr, timer_callback_p StopCallback = nullptr)
+  Serial.print(F("Using PWM Freq = "));
+  Serial.print(PWM_Freq1);
+  Serial.print(F(", PWM DutyCycle = "));
+  Serial.println(PWM_DutyCycle1);
 
 #if USING_PWM_FREQUENCY
 
-	// You can use this with PWM_Freq in Hz
-	ISR_PWM.setPWM(PWM_Pin, PWM_Freq1, PWM_DutyCycle1);
+  // You can use this with PWM_Freq in Hz
+  ISR_PWM.setPWM(PWM_Pin, PWM_Freq1, PWM_DutyCycle1);
 
 #else
 #if USING_MICROS_RESOLUTION
-	// Or using period in microsecs resolution
-	channelNum = ISR_PWM.setPWM_Period(PWM_Pin, PWM_Period1, PWM_DutyCycle1);
+  // Or using period in microsecs resolution
+  channelNum = ISR_PWM.setPWM_Period(PWM_Pin, PWM_Period1, PWM_DutyCycle1);
 #else
-	// Or using period in millisecs resolution
-	channelNum = ISR_PWM.setPWM_Period(PWM_Pin, PWM_Period1 / 1000, PWM_DutyCycle1);
+  // Or using period in millisecs resolution
+  channelNum = ISR_PWM.setPWM_Period(PWM_Pin, PWM_Period1 / 1000, PWM_DutyCycle1);
 #endif
 #endif
 }
@@ -145,54 +146,54 @@ void setup()
 
 void changePWM()
 {
-	static uint8_t count = 1;
+  static uint8_t count = 1;
 
-	float PWM_Freq;
-	float PWM_DutyCycle;
+  float PWM_Freq;
+  float PWM_DutyCycle;
 
-	if (count++ % 2)
-	{
-		PWM_Freq        = PWM_Freq2;
-		PWM_DutyCycle   = PWM_DutyCycle2;
-	}
-	else
-	{
-		PWM_Freq        = PWM_Freq1;
-		PWM_DutyCycle   = PWM_DutyCycle1;
-	}
+  if (count++ % 2)
+  {
+    PWM_Freq        = PWM_Freq2;
+    PWM_DutyCycle   = PWM_DutyCycle2;
+  }
+  else
+  {
+    PWM_Freq        = PWM_Freq1;
+    PWM_DutyCycle   = PWM_DutyCycle1;
+  }
 
-	// You can use this with PWM_Freq in Hz
-	if (!ISR_PWM.modifyPWMChannel(channelNum, PWM_Pin, PWM_Freq, PWM_DutyCycle))
-	{
-		Serial.print(F("modifyPWMChannel error for PWM_Period"));
-	}
+  // You can use this with PWM_Freq in Hz
+  if (!ISR_PWM.modifyPWMChannel(channelNum, PWM_Pin, PWM_Freq, PWM_DutyCycle))
+  {
+    Serial.print(F("modifyPWMChannel error for PWM_Period"));
+  }
 }
 
 ////////////////////////////////////////////////
 
 void changingPWM()
 {
-	static ulong changingPWM_timeout = 0;
+  static ulong changingPWM_timeout = 0;
 
-	static ulong current_millis;
+  static ulong current_millis;
 
 #define CHANGING_PWM_INTERVAL    10000L
 
-	current_millis = millis();
+  current_millis = millis();
 
-	// changePWM every CHANGING_PWM_INTERVAL (10) seconds.
-	if ( (current_millis > changingPWM_timeout) )
-	{
-		if (changingPWM_timeout > 0)
-			changePWM();
+  // changePWM every CHANGING_PWM_INTERVAL (10) seconds.
+  if ( (current_millis > changingPWM_timeout) )
+  {
+    if (changingPWM_timeout > 0)
+      changePWM();
 
-		changingPWM_timeout = current_millis + CHANGING_PWM_INTERVAL;
-	}
+    changingPWM_timeout = current_millis + CHANGING_PWM_INTERVAL;
+  }
 }
 
 ////////////////////////////////////////////////
 
 void loop()
 {
-	changingPWM();
+  changingPWM();
 }

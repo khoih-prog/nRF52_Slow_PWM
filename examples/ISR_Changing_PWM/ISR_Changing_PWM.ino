@@ -27,7 +27,7 @@
 #define LED_ON              LOW
 
 #ifndef LED_BUILTIN
-	#define LED_BUILTIN       25
+  #define LED_BUILTIN       25
 #endif
 
 #ifndef LED_BLUE_PIN
@@ -63,7 +63,7 @@ NRF52_Slow_PWM ISR_PWM;
 
 void TimerHandler()
 {
-	ISR_PWM.run();
+  ISR_PWM.run();
 }
 //////////////////////////////////////////////////////
 
@@ -96,78 +96,79 @@ int channelNum;
 
 void setup()
 {
-	Serial.begin(115200);
+  Serial.begin(115200);
 
-	while (!Serial && millis() < 5000);
+  while (!Serial && millis() < 5000);
 
-	delay(2000);
+  delay(2000);
 
-	Serial.print(F("\nStarting ISR_Changing_PWM on ")); Serial.println(BOARD_NAME);
-	Serial.println(NRF52_SLOW_PWM_VERSION);
+  Serial.print(F("\nStarting ISR_Changing_PWM on "));
+  Serial.println(BOARD_NAME);
+  Serial.println(NRF52_SLOW_PWM_VERSION);
 
-	// Interval in microsecs
-	if (ITimer.attachInterruptInterval(HW_TIMER_INTERVAL_US, TimerHandler))
-	{
-		startMicros = micros();
-		Serial.print(F("Starting ITimer OK, micros() = "));
-		Serial.println(startMicros);
-	}
-	else
-		Serial.println(F("Can't set ITimer. Select another freq. or timer"));
+  // Interval in microsecs
+  if (ITimer.attachInterruptInterval(HW_TIMER_INTERVAL_US, TimerHandler))
+  {
+    startMicros = micros();
+    Serial.print(F("Starting ITimer OK, micros() = "));
+    Serial.println(startMicros);
+  }
+  else
+    Serial.println(F("Can't set ITimer. Select another freq. or timer"));
 
-	// Just to demonstrate, don't use too many ISR Timers if not absolutely necessary
-	// You can use up to 16 timer for each ISR_PWM
-	//void setPWM(uint32_t pin, uint32_t frequency, uint32_t dutycycle
-	// , timer_callback_p StartCallback = nullptr, timer_callback_p StopCallback = nullptr)
+  // Just to demonstrate, don't use too many ISR Timers if not absolutely necessary
+  // You can use up to 16 timer for each ISR_PWM
+  //void setPWM(uint32_t pin, uint32_t frequency, uint32_t dutycycle
+  // , timer_callback_p StartCallback = nullptr, timer_callback_p StopCallback = nullptr)
 }
 
 void loop()
 {
-	Serial.print(F("Using PWM Freq = "));
-	Serial.print(PWM_Freq1);
-	Serial.print(F(", PWM DutyCycle = "));
-	Serial.println(PWM_DutyCycle1);
+  Serial.print(F("Using PWM Freq = "));
+  Serial.print(PWM_Freq1);
+  Serial.print(F(", PWM DutyCycle = "));
+  Serial.println(PWM_DutyCycle1);
 
 #if USING_PWM_FREQUENCY
 
-	// You can use this with PWM_Freq in Hz
-	channelNum = ISR_PWM.setPWM(PWM_Pin, PWM_Freq1, PWM_DutyCycle1);
+  // You can use this with PWM_Freq in Hz
+  channelNum = ISR_PWM.setPWM(PWM_Pin, PWM_Freq1, PWM_DutyCycle1);
 
 #else
 #if USING_MICROS_RESOLUTION
-	// Or using period in microsecs resolution
-	channelNum = ISR_PWM.setPWM_Period(PWM_Pin, PWM_Period1, PWM_DutyCycle1);
+  // Or using period in microsecs resolution
+  channelNum = ISR_PWM.setPWM_Period(PWM_Pin, PWM_Period1, PWM_DutyCycle1);
 #else
-	// Or using period in millisecs resolution
-	channelNum = ISR_PWM.setPWM_Period(PWM_Pin, PWM_Period1 / 1000, PWM_DutyCycle1);
+  // Or using period in millisecs resolution
+  channelNum = ISR_PWM.setPWM_Period(PWM_Pin, PWM_Period1 / 1000, PWM_DutyCycle1);
 #endif
 #endif
 
-	delay(10000);
+  delay(10000);
 
-	ISR_PWM.deleteChannel((unsigned) channelNum);
+  ISR_PWM.deleteChannel((unsigned) channelNum);
 
-	Serial.print(F("Using PWM Freq = "));
-	Serial.print(PWM_Freq2);
-	Serial.print(F(", PWM DutyCycle = "));
-	Serial.println(PWM_DutyCycle2);
+  Serial.print(F("Using PWM Freq = "));
+  Serial.print(PWM_Freq2);
+  Serial.print(F(", PWM DutyCycle = "));
+  Serial.println(PWM_DutyCycle2);
 
 #if USING_PWM_FREQUENCY
 
-	// You can use this with PWM_Freq in Hz
-	channelNum = ISR_PWM.setPWM(PWM_Pin, PWM_Freq2, PWM_DutyCycle2);
+  // You can use this with PWM_Freq in Hz
+  channelNum = ISR_PWM.setPWM(PWM_Pin, PWM_Freq2, PWM_DutyCycle2);
 
 #else
 #if USING_MICROS_RESOLUTION
-	// Or using period in microsecs resolution
-	channelNum = ISR_PWM.setPWM_Period(PWM_Pin, PWM_Period2, PWM_DutyCycle2);
+  // Or using period in microsecs resolution
+  channelNum = ISR_PWM.setPWM_Period(PWM_Pin, PWM_Period2, PWM_DutyCycle2);
 #else
-	// Or using period in millisecs resolution
-	channelNum = ISR_PWM.setPWM_Period(PWM_Pin, PWM_Period2 / 1000, PWM_DutyCycle2);
+  // Or using period in millisecs resolution
+  channelNum = ISR_PWM.setPWM_Period(PWM_Pin, PWM_Period2 / 1000, PWM_DutyCycle2);
 #endif
 #endif
 
-	delay(10000);
+  delay(10000);
 
-	ISR_PWM.deleteChannel((unsigned) channelNum);
+  ISR_PWM.deleteChannel((unsigned) channelNum);
 }
