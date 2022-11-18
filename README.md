@@ -89,7 +89,7 @@ This library enables you to use Interrupt from Hardware Timers on nRF52-based bo
 
 As **Hardware Timers are rare, and very precious assets** of any board, this library now enables you to use up to **16 ISR-based synchronized PWM channels, while consuming only 1 Hardware Timer**. Timers' interval is very long (**ulong millisecs**).
 
-Now with these new **16 ISR-based PWM-channels**, the maximum interval is **practically unlimited** (limited only by unsigned long miliseconds) while **the accuracy is nearly perfect** compared to software PWM channels. 
+Now with these new **16 ISR-based PWM-channels**, the maximum interval is **practically unlimited** (limited only by unsigned long milliseconds) while **the accuracy is nearly perfect** compared to software PWM channels. 
 
 The most important feature is they're ISR-based PWM channels. Therefore, their executions are **not blocked by bad-behaving functions / tasks**. This important feature is absolutely necessary for mission-critical tasks. 
 
@@ -128,7 +128,7 @@ The catch is **your function is now part of an ISR (Interrupt Service Routine), 
 
 1. **AdaFruit Feather nRF52832, nRF52840 Express, BlueFruit Sense, Itsy-Bitsy nRF52840 Express, Metro nRF52840 Express, NINA_B302_ublox, NINA_B112_ublox etc.**
 2. **Sparkfun Pro nRF52840 Mini**
-3. **Seeeduino nRF52840-based boards such as SEEED_XIAO_NRF52840 and SEEED_XIAO_NRF52840_SENSE**, etc. using Seeeduino `nRF%2` core
+3. **Seeeduino nRF52840-based boards such as SEEED_XIAO_NRF52840 and SEEED_XIAO_NRF52840_SENSE**, etc. using Seeeduino `nRF52` core
 
 ---
 
@@ -589,7 +589,7 @@ Submit issues to: [nRF52_Slow_PWM issues](https://github.com/khoih-prog/nRF52_Sl
  7. DutyCycle to be optionally updated at the end current PWM period instead of immediately.
  8. Display informational warning only when `_PWM_LOGLEVEL_` > 3
  9. Add support to `Sparkfun Pro nRF52840 Mini`
-10. Add support to Seeeduino nRF52840-based boards such as **SEEED_XIAO_NRF52840 and SEEED_XIAO_NRF52840_SENSE**, etc. using Seeeduino `nRF%2` core
+10. Add support to Seeeduino nRF52840-based boards such as **SEEED_XIAO_NRF52840 and SEEED_XIAO_NRF52840_SENSE**, etc. using Seeeduino `nRF52` core
 11. Add astyle using `allman` style. Restyle the library
 12. Add `Packages' Patches` to add Seeeduino `nRF52` core
 
